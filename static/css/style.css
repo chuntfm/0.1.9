@@ -644,7 +644,7 @@ body::before {
     #header-title {
         border-bottom: none;
         flex: 1;
-        text-align: center;
+        text-align: right;
         min-width: 0;
     }
 
