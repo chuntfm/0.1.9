@@ -39,10 +39,13 @@
             --highlight: {{ config.theme.dark.highlight }};
             --border: {{ config.theme.dark.fg }};
         }
+
     </style>
     <script>
         (function(){var t=localStorage.getItem('themeMode');if(t)document.documentElement.setAttribute('data-theme',t);})();
+        document.documentElement.classList.add('js');
     </script>
+    <noscript><style>#tz-row { display: none; } .js-only { display: none; } #player-section { cursor: default; }</style></noscript>
     <script>
         window.SITE_CONFIG = {{ config_json }};
     </script>
@@ -60,7 +63,7 @@
             <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
         </div>
         <div class="cell cell-narrow" id="header-counter">
-            <span id="day-counter"></span>
+            <span id="day-counter"><a href="https://chunt.org" class="counter-link">chunt.org</a></span>
         </div>
     </div>
 
@@ -71,19 +74,26 @@
             <span class="play-text" id="play-label"><span>P</span><span>L</span><span class="rotated-letter">A</span><span>Y</span></span>
             <span class="play-text" id="stop-label" hidden><span>S</span><span>T</span><span class="rotated-letter">O</span><span>P</span></span>
             <audio id="audio-player" preload="none"></audio>
+            <noscript>
+                <audio controls preload="none" style="width:100%;margin-top:0.5rem">
+                    <source src="{{ config.streams.default }}" type="audio/mpeg">
+                </audio>
+            </noscript>
         </div>
         <a href="{{ config.links.special.chat.url }}" target="_blank" rel="noopener" class="cell cell-btn cell-narrow" id="chat-cell">
             <span class="cell-btn-label">{{ config.links.special.chat.name | upper }}</span>
         </a>
         <div class="cell cell-narrow" id="links-cell">
-            <div id="links-collapsed">
+            <div id="links-collapsed" hidden>
                 <span id="links-rotating"></span>
                 <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
             </div>
             <script>
                 window.LINKS_QUOTES = {{ config.links.quotes | tojson }};
+                document.getElementById('links-collapsed').hidden = false;
+                document.getElementById('links-expanded').hidden = true;
             </script>
-            <div id="links-expanded" hidden>
+            <div id="links-expanded">
                 {% for link in config.links.primary %}
                 <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link" data-primary>{{ link.name | upper }}</a>
                 {% endfor %}
@@ -95,7 +105,7 @@
                       data-u="{{ config.links.email.split('@')[0] }}"
                       data-d="{{ config.links.email.split('@')[1] }}"></span>
                 {% endif %}
-                <button id="links-collapse" class="links-toggle-btn">x</button>
+                <button id="links-collapse" class="links-toggle-btn js-only">x</button>
             </div>
         </div>
     </div>
@@ -120,7 +130,7 @@
         </div>
         <div class="cell" id="now-body">
             <div id="now-content">
-                <p class="placeholder">checking schedule...</p>
+                <p class="placeholder">&mdash;</p>
             </div>
         </div>
         <div class="cell cell-narrow cell-spacer"></div>
@@ -133,7 +143,7 @@
         </div>
         <div class="cell" id="upnext-body">
             <div id="upnext-content">
-                <p class="placeholder">checking schedule...</p>
+                <p class="placeholder">&mdash;</p>
             </div>
         </div>
         <div class="cell cell-narrow cell-spacer"></div>
@@ -146,7 +156,7 @@
         </div>
         <div class="cell" id="previous-body">
             <div id="previous-content">
-                <p class="placeholder">checking schedule...</p>
+                <p class="placeholder">&mdash;</p>
             </div>
         </div>
         <div class="cell cell-narrow cell-spacer"></div>
