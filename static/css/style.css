@@ -19,19 +19,19 @@ body {
     line-height: 1.5;
     position: relative;
     transition: background-color 0.3s, color 0.3s;
-    cursor: url('../images/luigi_cursor.png'), auto;
+    cursor: url('../web/images/luigi_cursor.png'), auto;
 }
 
 p, dt, dl {
-    cursor: url('../images/luigi_cursor_flip.png'), auto;
+    cursor: url('../web/images/luigi_cursor_flip.png'), auto;
 }
 
 details {
-    cursor: url('../images/luigi_cursor_hat.png'), auto;
+    cursor: url('../web/images/luigi_cursor_hat.png'), auto;
 }
 
 a, button, audio, .cell-btn, .links-toggle-btn, .mini-btn {
-    cursor: url('../images/luigi_point.png'), pointer;
+    cursor: url('../web/images/luigi_point.png'), pointer;
 }
 
 /* Photocopy noise overlay */
@@ -137,7 +137,7 @@ body::before {
 
 /* Button-style cells */
 .cell-btn {
-    cursor: url('../images/luigi_point.png'), pointer;
+    cursor: url('../web/images/luigi_point.png'), pointer;
     transition: background 0.15s, color 0.15s;
     text-align: center;
     user-select: none;
@@ -294,7 +294,7 @@ body::before {
     font-size: 0.8rem;
     letter-spacing: 0.1em;
     color: var(--fg);
-    cursor: url('../images/luigi_point.png'), pointer;
+    cursor: url('../web/images/luigi_point.png'), pointer;
     padding: 0.25rem 0;
 }
 
@@ -380,7 +380,7 @@ body::before {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    cursor: url('../images/luigi_point.png'), pointer;
+    cursor: url('../web/images/luigi_point.png'), pointer;
     font-family: var(--font-heading);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
@@ -560,7 +560,7 @@ body::before {
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: 0.1em;
-    cursor: url('../images/luigi_point.png'), pointer;
+    cursor: url('../web/images/luigi_point.png'), pointer;
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--border);
     flex-shrink: 0;

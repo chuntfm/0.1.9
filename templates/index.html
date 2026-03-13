@@ -1,3 +1,5 @@
+{% set local = config.site.base_path ~ '/static' %}
+{% set assets = config.site.assets_url if config.site.assets_url else local %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,16 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config.site.title }}</title>
     <meta name="description" content="{{ config.site.description }}">
-    <link rel="icon" type="image/x-icon" href="{{ config.site.base_path }}/static/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ config.site.base_path }}/static/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ config.site.base_path }}/static/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="{{ config.site.base_path }}/static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="{{ assets }}/web/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ assets }}/web/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ assets }}/web/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="{{ assets }}/web/images/apple-touch-icon.png">
     {% if config.theme.fonts.webfont_url %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="{{ config.theme.fonts.webfont_url }}" rel="stylesheet">
     {% endif %}
-    <link rel="stylesheet" href="{{ config.site.base_path }}/static/css/style.css">
+    <link rel="stylesheet" href="{{ local }}/css/style.css">
     <style>
         :root {
             --font-body: {{ config.theme.fonts.body }};
@@ -57,7 +59,7 @@
     <!-- HEADER ROW -->
     <div class="row" id="header-row">
         <a href="{{ config.site.url }}" class="cell cell-narrow" id="header-logo">
-            <img id="logo" src="{{ config.site.base_path }}/static/images/chuntfm_eye.svg" alt="ChuntFM logo">
+            <img id="logo" src="{{ assets }}/web/images/chuntfm_eye.svg" alt="ChuntFM logo">
         </a>
         <div class="cell" id="header-title">
             <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
@@ -176,10 +178,10 @@
     <span id="mini-now-playing" role="button" tabindex="0" style="cursor:pointer"></span>
 </div>
 
-<script src="{{ config.site.base_path }}/static/js/counter.js"></script>
-<script src="{{ config.site.base_path }}/static/js/player.js"></script>
-<script src="{{ config.site.base_path }}/static/js/schedule.js"></script>
-<script src="{{ config.site.base_path }}/static/js/theme.js"></script>
+<script src="{{ local }}/js/counter.js"></script>
+<script src="{{ local }}/js/player.js"></script>
+<script src="{{ local }}/js/schedule.js"></script>
+<script src="{{ local }}/js/theme.js"></script>
 {% if config.analytics.goatcounter.enabled %}
 <script data-goatcounter="{{ config.analytics.goatcounter.url or ('https://' ~ config.analytics.goatcounter.id ~ '.goatcounter.com/count') }}"
         async src="//gc.zgo.at/count.js"></script>

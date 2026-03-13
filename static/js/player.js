@@ -251,8 +251,8 @@
                 artist: config.site.title,
                 album: "LIVE",
                 artwork: [
-                    { src: config.site.base_path + "/static/images/logo_fishe_calm_256.png", sizes: "256x256", type: "image/png" },
-                    { src: config.site.base_path + "/static/images/logo_fishe_calm_512.png", sizes: "512x512", type: "image/png" }
+                    { src: config.site.base_path + "/static/web/images/logo_fishe_calm_256.png", sizes: "256x256", type: "image/png" },
+                    { src: config.site.base_path + "/static/web/images/logo_fishe_calm_512.png", sizes: "512x512", type: "image/png" }
                 ]
             });
 

@@ -4,6 +4,7 @@ site:
   base_path: ""
   description: "ChuntFM: Fun."
   footer_text: "Live, laugh, chunt."
+  assets_url: ""
 
 api:
   base: "https://api.chunt.org"

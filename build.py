@@ -96,7 +96,7 @@ def build():
         shutil.copytree(STATIC, DIST / "static")
 
     # Copy favicon to root for browser default requests
-    favicon = STATIC / "images" / "favicon.ico"
+    favicon = STATIC / "web" / "images" / "favicon.ico"
     if favicon.exists():
         shutil.copy2(favicon, DIST / "favicon.ico")
 

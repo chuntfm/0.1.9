@@ -33,6 +33,7 @@ jobs:
       - name: Build site
         env:
           SITE__SITE__BASE_PATH: ${{ secrets.SITE__SITE__BASE_PATH }}
+          SITE__SITE__ASSETS_URL: ${{ secrets.SITE__SITE__ASSETS_URL }}
           SITE__LINKS__EMAIL: ${{ secrets.SITE__LINKS__EMAIL }}
         run: python build.py
 
