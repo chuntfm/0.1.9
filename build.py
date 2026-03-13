@@ -70,7 +70,12 @@ def build():
 
     # Set up Jinja2
     env = Environment(loader=FileSystemLoader(str(TEMPLATES)))
-    template = env.get_template("index.html")
+
+    # Resolve asset paths
+    base_path = config.get("site", {}).get("base_path", "")
+    assets_url = config.get("site", {}).get("assets_url", "")
+    local = f"{base_path}/static"
+    assets = assets_url if assets_url else local
 
     # Build client config (exclude sensitive data like email)
     client_config = json.loads(json.dumps(config))
@@ -78,10 +83,13 @@ def build():
         del client_config["links"]["email"]
 
     # Render HTML
-    html = template.render(
+    html = env.get_template("index.html").render(
         config=config,
         config_json=json.dumps(client_config, indent=2),
     )
+
+    # Render CSS
+    css = env.get_template("style.css").render(assets=assets)
 
     # Prepare dist
     if DIST.exists():
@@ -95,8 +103,11 @@ def build():
     if STATIC.exists():
         shutil.copytree(STATIC, DIST / "static")
 
+    # Write rendered CSS (overwrites the copy from static)
+    (DIST / "static" / "css" / "style.css").write_text(css)
+
     # Copy favicon to root for browser default requests
-    favicon = STATIC / "web" / "images" / "favicon.ico"
+    favicon = STATIC / "images" / "web" / "favicons" / "favicon.ico"
     if favicon.exists():
         shutil.copy2(favicon, DIST / "favicon.ico")
 

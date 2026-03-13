@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config.site.title }}</title>
     <meta name="description" content="{{ config.site.description }}">
-    <link rel="icon" type="image/x-icon" href="{{ assets }}/web/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ assets }}/web/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ assets }}/web/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="{{ assets }}/web/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="{{ assets }}/images/web/favicons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ assets }}/images/web/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ assets }}/images/web/favicons/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="{{ assets }}/images/web/favicons/apple-touch-icon.png">
     {% if config.theme.fonts.webfont_url %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,7 @@
     <!-- HEADER ROW -->
     <div class="row" id="header-row">
         <a href="{{ config.site.url }}" class="cell cell-narrow" id="header-logo">
-            <img id="logo" src="{{ assets }}/web/images/chuntfm_eye.svg" alt="ChuntFM logo">
+            <img id="logo" src="{{ assets }}/images/web/logos/chuntfm_eye.svg" alt="ChuntFM logo">
         </a>
         <div class="cell" id="header-title">
             <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
@@ -90,11 +90,6 @@
                 <span id="links-rotating"></span>
                 <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
             </div>
-            <script>
-                window.LINKS_QUOTES = {{ config.links.quotes | tojson }};
-                document.getElementById('links-collapsed').hidden = false;
-                document.getElementById('links-expanded').hidden = true;
-            </script>
             <div id="links-expanded">
                 {% for link in config.links.primary %}
                 <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link" data-primary>{{ link.name | upper }}</a>
@@ -109,6 +104,11 @@
                 {% endif %}
                 <button id="links-collapse" class="links-toggle-btn js-only">x</button>
             </div>
+            <script>
+                window.LINKS_QUOTES = {{ config.links.quotes | tojson }};
+                document.getElementById('links-collapsed').hidden = false;
+                document.getElementById('links-expanded').hidden = true;
+            </script>
         </div>
     </div>
 
