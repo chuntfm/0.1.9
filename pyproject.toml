@@ -1,0 +1,6 @@
+[project]
+name = "chunt15-org"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.8.13"
+dependencies = []

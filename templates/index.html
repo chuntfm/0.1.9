@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.site.title }}</title>
+    <meta name="description" content="{{ config.site.description }}">
+    <link rel="icon" type="image/x-icon" href="{{ config.site.base_path }}/static/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ config.site.base_path }}/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ config.site.base_path }}/static/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="{{ config.site.base_path }}/static/images/apple-touch-icon.png">
+    {% if config.theme.fonts.webfont_url %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="{{ config.theme.fonts.webfont_url }}" rel="stylesheet">
+    {% endif %}
+    <link rel="stylesheet" href="{{ config.site.base_path }}/static/css/style.css">
+    <style>
+        :root {
+            --font-body: {{ config.theme.fonts.body }};
+            --font-heading: {{ config.theme.fonts.heading }};
+            --font-logo: {{ config.theme.fonts.logo or config.theme.fonts.heading }};
+            --bg: {{ config.theme.light.bg }};
+            --fg: {{ config.theme.light.fg }};
+            --highlight: {{ config.theme.light.highlight }};
+            --border: {{ config.theme.light.fg }};
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: {{ config.theme.dark.bg }};
+                --fg: {{ config.theme.dark.fg }};
+                --highlight: {{ config.theme.dark.highlight }};
+                --border: {{ config.theme.dark.fg }};
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: {{ config.theme.dark.bg }};
+            --fg: {{ config.theme.dark.fg }};
+            --highlight: {{ config.theme.dark.highlight }};
+            --border: {{ config.theme.dark.fg }};
+        }
+    </style>
+    <script>
+        (function(){var t=localStorage.getItem('themeMode');if(t)document.documentElement.setAttribute('data-theme',t);})();
+    </script>
+    <script>
+        window.SITE_CONFIG = {{ config_json }};
+    </script>
+</head>
+<body>
+
+<div id="site-table">
+
+    <!-- HEADER ROW -->
+    <div class="row" id="header-row">
+        <a href="{{ config.site.url }}" class="cell cell-narrow" id="header-logo">
+            <img id="logo" src="{{ config.site.base_path }}/static/images/chuntfm_eye.svg" alt="ChuntFM logo">
+        </a>
+        <div class="cell" id="header-title">
+            <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
+        </div>
+        <div class="cell cell-narrow" id="header-counter">
+            <span id="day-counter"></span>
+        </div>
+    </div>
+
+    <!-- PLAYER ROW -->
+    <div class="row" id="player-row">
+        <div class="cell cell-btn pulse-on-load" id="player-section" role="button" tabindex="0" aria-label="Play">
+            <span class="player-dot" id="player-dot"></span>
+            <span class="play-text" id="play-label"><span>P</span><span>L</span><span class="rotated-letter">A</span><span>Y</span></span>
+            <span class="play-text" id="stop-label" hidden><span>S</span><span>T</span><span class="rotated-letter">O</span><span>P</span></span>
+            <audio id="audio-player" preload="none"></audio>
+        </div>
+        <a href="{{ config.links.special.chat.url }}" target="_blank" rel="noopener" class="cell cell-btn cell-narrow" id="chat-cell">
+            <span class="cell-btn-label">{{ config.links.special.chat.name | upper }}</span>
+        </a>
+        <div class="cell cell-narrow" id="links-cell">
+            <div id="links-collapsed">
+                <span id="links-rotating"></span>
+                <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
+            </div>
+            <script>
+                window.LINKS_QUOTES = {{ config.links.quotes | tojson }};
+            </script>
+            <div id="links-expanded" hidden>
+                {% for link in config.links.primary %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link" data-primary>{{ link.name | upper }}</a>
+                {% endfor %}
+                {% for link in config.links.secondary %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a>
+                {% endfor %}
+                {% if config.links.email %}
+                <span class="drawer-email" id="obfuscated-email"
+                      data-u="{{ config.links.email.split('@')[0] }}"
+                      data-d="{{ config.links.email.split('@')[1] }}"></span>
+                {% endif %}
+                <button id="links-collapse" class="links-toggle-btn">x</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMEZONE TOGGLE ROW -->
+    <div class="row" id="tz-row">
+        <div class="cell" id="tz-cell" colspan="2">
+            <label class="tz-switch">
+                <input type="checkbox" id="tz-toggle" checked>
+                <span class="tz-option" id="tz-utc-label">UTC</span>
+                <span class="tz-slider"></span>
+                <span class="tz-option" id="tz-local-label">LOCAL</span>
+            </label>
+            <span id="tz-label" class="tz-current"></span>
+        </div>
+    </div>
+
+    <!-- NOW ROW -->
+    <div class="row" id="now-row">
+        <div class="cell cell-label">
+            <span class="section-label">NOW</span>
+        </div>
+        <div class="cell" id="now-body">
+            <div id="now-content">
+                <p class="placeholder">checking schedule...</p>
+            </div>
+        </div>
+        <div class="cell cell-narrow cell-spacer"></div>
+    </div>
+
+    <!-- UP NEXT ROW -->
+    <div class="row" id="upnext-row">
+        <div class="cell cell-label">
+            <span class="section-label">UP NEXT</span>
+        </div>
+        <div class="cell" id="upnext-body">
+            <div id="upnext-content">
+                <p class="placeholder">checking schedule...</p>
+            </div>
+        </div>
+        <div class="cell cell-narrow cell-spacer"></div>
+    </div>
+
+    <!-- PREVIOUS ROW -->
+    <div class="row" id="previous-row">
+        <div class="cell cell-label">
+            <span class="section-label">PREVIOUS</span>
+        </div>
+        <div class="cell" id="previous-body">
+            <div id="previous-content">
+                <p class="placeholder">checking schedule...</p>
+            </div>
+        </div>
+        <div class="cell cell-narrow cell-spacer"></div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div id="site-footer">
+    <span class="footer-text">{{ config.site.footer_text }}</span>
+</div>
+
+<!-- MINI PLAYER (fixed bottom bar) -->
+<div id="mini-player" class="mini-player hidden">
+    <span id="mini-play-btn" class="mini-btn" role="button" tabindex="0">PLAY</span>
+    <span id="mini-stop-btn" class="mini-btn" role="button" tabindex="0" hidden>STOP</span>
+    <span id="mini-now-playing" role="button" tabindex="0" style="cursor:pointer"></span>
+</div>
+
+<script src="{{ config.site.base_path }}/static/js/counter.js"></script>
+<script src="{{ config.site.base_path }}/static/js/player.js"></script>
+<script src="{{ config.site.base_path }}/static/js/schedule.js"></script>
+<script src="{{ config.site.base_path }}/static/js/theme.js"></script>
+{% if config.analytics.goatcounter.enabled %}
+<script data-goatcounter="{{ config.analytics.goatcounter.url or ('https://' ~ config.analytics.goatcounter.id ~ '.goatcounter.com/count') }}"
+        async src="//gc.zgo.at/count.js"></script>
+{% endif %}
+</body>
+</html>

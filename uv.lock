@@ -1,0 +1,8 @@
+version = 1
+revision = 3
+requires-python = ">=3.8.13"
+
+[[package]]
+name = "chunt15-org"
+version = "0.1.0"
+source = { virtual = "." }

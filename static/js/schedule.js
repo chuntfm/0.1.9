@@ -1,0 +1,293 @@
+(function () {
+    "use strict";
+
+    var config = window.SITE_CONFIG;
+    var apiBase = config.api.base;
+
+    var nowContent = document.getElementById("now-content");
+    var upnextContent = document.getElementById("upnext-content");
+    var previousContent = document.getElementById("previous-content");
+    var tzToggle = document.getElementById("tz-toggle");
+    var tzLabel = document.getElementById("tz-label");
+
+    var useUTC = localStorage.getItem("timeDisplayMode") === "utc";
+
+    // --- Timezone toggle ---
+
+    function getLocalTzAbbr() {
+        try {
+            return new Date().toLocaleTimeString("en-US", { timeZoneName: "short" }).split(" ").pop();
+        } catch (e) {
+            return "local";
+        }
+    }
+
+    function updateTzLabel() {
+        if (!tzLabel) return;
+        if (useUTC) {
+            tzLabel.textContent = "UTC";
+        } else {
+            tzLabel.textContent = getLocalTzAbbr();
+        }
+    }
+
+    if (tzToggle) {
+        tzToggle.checked = !useUTC;
+        tzToggle.addEventListener("change", function () {
+            useUTC = !this.checked;
+            localStorage.setItem("timeDisplayMode", useUTC ? "utc" : "local");
+            updateTzLabel();
+            reRenderAll();
+        });
+    }
+
+    // --- Time formatting ---
+
+    function formatTime(dateStr) {
+        try {
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return "";
+            if (useUTC) {
+                var h = String(d.getUTCHours()).padStart(2, "0");
+                var m = String(d.getUTCMinutes()).padStart(2, "0");
+                return h + ":" + m;
+            }
+            return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        } catch (e) {
+            return "";
+        }
+    }
+
+    function formatTimeRange(start, end) {
+        if (!start) return "";
+        var result = formatTime(start);
+        if (end) {
+            var endStr = formatTime(end);
+            var ds = new Date(start);
+            var de = new Date(end);
+            if (!isNaN(ds.getTime()) && !isNaN(de.getTime())) {
+                var startDay = useUTC ? ds.getUTCDate() : ds.getDate();
+                var endDay = useUTC ? de.getUTCDate() : de.getDate();
+                if (startDay !== endDay) {
+                    var mo = useUTC
+                        ? de.toLocaleString("en-US", { month: "short", timeZone: "UTC" })
+                        : de.toLocaleString("en-US", { month: "short" });
+                    endStr += " (" + mo + " " + (useUTC ? de.getUTCDate() : de.getDate()) + ")";
+                }
+            }
+            result += " - " + endStr;
+        }
+        return result;
+    }
+
+    // --- Data store (for re-rendering on tz switch) ---
+
+    var cachedNow = null;
+    var cachedUpnext = null;
+    var cachedPrevious = null;
+
+    function reRenderAll() {
+        renderShows(nowContent, cachedNow, "no live show");
+        renderShows(upnextContent, cachedUpnext, "nothing coming up");
+        renderShows(previousContent, cachedPrevious, "no previous shows");
+    }
+
+    // --- Rendering ---
+
+    function getShowDate(show) {
+        var dateStr = show.start || show.starttime;
+        if (!dateStr) return null;
+        try {
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return null;
+            if (useUTC) {
+                return d.getUTCFullYear() + "-" +
+                    String(d.getUTCMonth() + 1).padStart(2, "0") + "-" +
+                    String(d.getUTCDate()).padStart(2, "0");
+            }
+            return d.getFullYear() + "-" +
+                String(d.getMonth() + 1).padStart(2, "0") + "-" +
+                String(d.getDate()).padStart(2, "0");
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function formatDateHeading(dateKey) {
+        try {
+            var parts = dateKey.split("-");
+            var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            var weekday = d.toLocaleDateString("en-US", { weekday: "short" });
+            return weekday + " " + dateKey;
+        } catch (e) {
+            return dateKey;
+        }
+    }
+
+    function groupByDay(shows) {
+        var groups = [];
+        var groupMap = {};
+        shows.forEach(function (show) {
+            var key = getShowDate(show) || "unknown";
+            if (!groupMap[key]) {
+                groupMap[key] = [];
+                groups.push(key);
+            }
+            groupMap[key].push(show);
+        });
+        return { keys: groups, map: groupMap };
+    }
+
+    function renderShow(show) {
+        var div = document.createElement("div");
+        div.className = "show-entry";
+
+        if (show.restream) {
+            var restreamEl = document.createElement("div");
+            restreamEl.className = "restream-label";
+            restreamEl.textContent = "restream";
+            div.appendChild(restreamEl);
+        }
+
+        var timeRange = formatTimeRange(show.start || show.starttime, show.stop || show.end || show.endtime);
+        if (timeRange) {
+            var timeEl = document.createElement("div");
+            timeEl.className = "show-time";
+            timeEl.textContent = timeRange;
+            div.appendChild(timeEl);
+        }
+
+        var title = show.title || show.name || "Untitled";
+        var titleEl = document.createElement("div");
+        titleEl.className = "show-title";
+        titleEl.textContent = title;
+        div.appendChild(titleEl);
+
+        if (show.description) {
+            var descEl = document.createElement("div");
+            descEl.className = "show-description";
+            descEl.textContent = show.description;
+            div.appendChild(descEl);
+        }
+
+        if (show.restream && show.show_url) {
+            var linkEl = document.createElement("a");
+            linkEl.href = show.show_url;
+            linkEl.target = "_blank";
+            linkEl.rel = "noopener";
+            linkEl.className = "restream-link";
+            linkEl.textContent = "listen on mixcloud";
+            div.appendChild(linkEl);
+        }
+
+        return div;
+    }
+
+    function renderShows(container, shows, emptyMsg) {
+        container.innerHTML = "";
+        if (!shows || shows.length === 0) {
+            var p = document.createElement("p");
+            p.className = "placeholder";
+            p.textContent = emptyMsg || "nothing scheduled";
+            container.appendChild(p);
+            return;
+        }
+
+        var grouped = groupByDay(shows);
+
+        // Skip day headings if all shows are on the same day
+        var showHeadings = grouped.keys.length > 1;
+
+        grouped.keys.forEach(function (key) {
+            if (showHeadings && key !== "unknown") {
+                var heading = document.createElement("div");
+                heading.className = "day-heading";
+                heading.textContent = formatDateHeading(key);
+                container.appendChild(heading);
+            }
+            grouped.map[key].forEach(function (show) {
+                container.appendChild(renderShow(show));
+            });
+        });
+    }
+
+    // --- API calls ---
+
+    function normalizeResponse(data) {
+        if (Array.isArray(data)) return data;
+        if (data && typeof data === "object") {
+            if (data.shows) return data.shows;
+            if (data.data) return Array.isArray(data.data) ? data.data : [data.data];
+            return [data];
+        }
+        return [];
+    }
+
+    var miniNowPlaying = document.getElementById("mini-now-playing");
+
+    function fetchNow() {
+        return fetch(apiBase + config.api.now_playing)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cachedNow = normalizeResponse(data);
+                renderShows(nowContent, cachedNow, "no live show");
+                // Update mini-player titles (rotate if multiple)
+                if (window.setMiniTitles) {
+                    var titles = cachedNow
+                        .filter(function (s) { return s.title; })
+                        .map(function (s) { return s.title; });
+                    window.setMiniTitles(titles);
+                }
+            })
+            .catch(function () {});
+    }
+
+    function fetchUpnext() {
+        return fetch(apiBase + config.api.schedule_upnext)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cachedUpnext = normalizeResponse(data);
+                renderShows(upnextContent, cachedUpnext, "nothing coming up");
+            })
+            .catch(function () {});
+    }
+
+    function fetchPrevious() {
+        fetch(apiBase + config.api.schedule_previous)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                cachedPrevious = normalizeResponse(data).reverse();
+                renderShows(previousContent, cachedPrevious, "no previous shows");
+            })
+            .catch(function () {});
+    }
+
+    // --- Init ---
+
+    function fetchAll() {
+        fetchNow().then(function () {
+            fetchUpnext();
+            fetchPrevious();
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        updateTzLabel();
+
+        // Initial fetch: NOW first, then defer upnext + previous
+        fetchAll();
+
+        var pollNow = config.polling.now_playing;
+        var pollUpnext = config.polling.schedule_upnext;
+        var pollPrevious = config.polling.schedule_previous;
+
+        if (pollNow === 0 || pollUpnext === 0 || pollPrevious === 0) {
+            // If any polling value is 0, poll everything together at 30s
+            setInterval(fetchAll, 30000);
+        } else {
+            setInterval(fetchNow, pollNow * 1000);
+            setInterval(fetchUpnext, pollUpnext * 1000);
+            setInterval(fetchPrevious, pollPrevious * 1000);
+        }
+    });
+})();

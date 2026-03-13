@@ -1,0 +1,65 @@
+site:
+  title: "ChuntFM"
+  url: "https://chunt.org"
+  base_path: ""
+  description: "ChuntFM: Fun."
+  footer_text: "Live, laugh, chunt."
+
+api:
+  base: "https://api.chunt.org"
+  schedule_previous: "/schedule/previous"
+  schedule_upnext: "/schedule/upnext"
+  now_playing: "/fm/channels/1/now-playing"
+
+streams:
+  default: "https://api.chunt.org/fm/channels/1/stream/default/play"
+  jukebox: "https://api.chunt.org/fm/channels/2/stream/default/play"
+
+links:
+  special:
+    chat:
+      name: "Chuntongo"
+      url: "https://chuntoo.chatango.com"
+  primary:
+    - name: "Mixcloud"
+      url: "https://www.mixcloud.com/chuntfm/"
+  secondary:
+    - name: "Instagram"
+      url: "https://www.instagram.com/chuntongo/"
+    - name: "Twitter"
+      url: "https://twitter.com/chuntfm"
+    - name: "Ch3"
+      url: "https://radioactivity.directory/ch3"
+  email: "spam@protect.org"
+  quotes:
+    - "If you're listening, tune in"
+    - "Delocalized community broadcasting"
+
+counter:
+  start_date: "2022-03-14"
+
+polling:
+  now_playing: 0
+  schedule_upnext: 0
+  schedule_previous: 0
+
+analytics:
+  goatcounter:
+    enabled: false
+    id: ""
+    url: ""
+
+theme:
+  fonts:
+    body: "'Courier Prime', 'Courier New', monospace"
+    heading: "'Helvetica Neue', Arial, sans-serif"
+    logo: ""
+    webfont_url: "https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap"
+  light:
+    bg: "#fdfdfd"
+    fg: "#1a1a1a"
+    highlight: "#1a3a6b"
+  dark:
+    bg: "#1a1a1a"
+    fg: "#e0e0e0"
+    highlight: "#5b8fd4"
