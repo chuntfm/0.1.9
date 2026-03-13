@@ -31,6 +31,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build site
+        env:
+          SITE__SITE__BASE_PATH: ${{ secrets.SITE__SITE__BASE_PATH }}
+          SITE__LINKS__EMAIL: ${{ secrets.SITE__LINKS__EMAIL }}
         run: python build.py
 
       - name: Setup Pages
