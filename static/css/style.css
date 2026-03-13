@@ -68,12 +68,12 @@ body::before {
 }
 
 .cell-narrow {
-    width: 25%;
+    width: 24%;
     white-space: nowrap;
 }
 
 .cell-label {
-    width: 25%;
+    width: 24%;
     white-space: nowrap;
     font-family: var(--font-heading);
     font-size: 0.85rem;
@@ -89,7 +89,7 @@ body::before {
 
 #header-logo {
     text-align: center;
-    width: 25%;
+    width: 24%;
 }
 
 #logo {
@@ -116,7 +116,7 @@ body::before {
 
 #header-counter {
     text-align: center;
-    width: 25%;
+    width: 24%;
 }
 
 #day-counter {
