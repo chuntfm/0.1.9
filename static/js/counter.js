@@ -4,11 +4,18 @@
     var startDate = new Date(window.SITE_CONFIG.counter.start_date + "T00:00:00Z");
     var counterEl = document.getElementById("day-counter");
 
-    function updateCounter(bpm) {
+    function getDayCount() {
         var now = new Date();
         var utcNow = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
         var utcStart = Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
-        var days = Math.floor((utcNow - utcStart) / (1000 * 60 * 60 * 24));
+        return Math.floor((utcNow - utcStart) / (1000 * 60 * 60 * 24));
+    }
+
+    // Set document title immediately
+    document.title = window.SITE_CONFIG.site.title + ": " + getDayCount() + " days of chunt";
+
+    function updateCounter(bpm) {
+        var days = getDayCount();
         var domain = "chunt" + days + ".org";
         if (!counterEl) return;
 
