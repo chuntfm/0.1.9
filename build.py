@@ -91,6 +91,9 @@ def build():
     # Render CSS
     css = env.get_template("style.css").render(assets=assets)
 
+    # Render 404
+    page_404 = env.get_template("404.html").render(config=config)
+
     # Prepare dist
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -98,6 +101,7 @@ def build():
 
     # Write HTML
     (DIST / "index.html").write_text(html)
+    (DIST / "404.html").write_text(page_404)
 
     # Copy static assets
     if STATIC.exists():
