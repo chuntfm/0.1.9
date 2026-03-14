@@ -149,12 +149,19 @@
             div.appendChild(restreamEl);
         }
 
-        var timeRange = formatTimeRange(show.start || show.starttime, show.stop || show.end || show.endtime);
-        if (timeRange) {
-            var timeEl = document.createElement("div");
-            timeEl.className = "show-time";
-            timeEl.textContent = timeRange;
-            div.appendChild(timeEl);
+        if (show.unscheduled) {
+            var nowEl = document.createElement("div");
+            nowEl.className = "show-time";
+            nowEl.textContent = "NOW";
+            div.appendChild(nowEl);
+        } else {
+            var timeRange = formatTimeRange(show.start || show.starttime, show.stop || show.end || show.endtime);
+            if (timeRange) {
+                var timeEl = document.createElement("div");
+                timeEl.className = "show-time";
+                timeEl.textContent = timeRange;
+                div.appendChild(timeEl);
+            }
         }
 
         var title = show.title || show.name || "Untitled";

@@ -217,6 +217,15 @@
     miniPlayBtn.addEventListener("click", play);
     miniStopBtn.addEventListener("click", stop);
 
+    // Spacebar toggle (only when not typing in an input)
+    document.addEventListener("keydown", function (e) {
+        if (e.key !== " ") return;
+        var tag = (e.target.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select" || e.target.isContentEditable) return;
+        e.preventDefault();
+        if (userPaused) { play(); } else { stop(); }
+    });
+
     var miniNowPlaying = document.getElementById("mini-now-playing");
     if (miniNowPlaying) {
         miniNowPlaying.addEventListener("click", function () {
