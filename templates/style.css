@@ -107,11 +107,27 @@ body::before {
     }
 }
 
+#header-title {
+    cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
+    user-select: none;
+    touch-action: manipulation;
+}
+
 #header-title h1 {
     font-family: var(--font-logo);
     font-size: 2rem;
     letter-spacing: 0.15em;
     font-weight: 400;
+}
+
+@keyframes bpm-pulse {
+    0% { background-color: var(--highlight); color: var(--bg); }
+    30% { background-color: transparent; color: var(--fg); }
+    100% { background-color: transparent; color: var(--fg); }
+}
+
+#header-title.bpm-beat {
+    animation: bpm-pulse var(--beat-ms) ease-out;
 }
 
 #header-counter {

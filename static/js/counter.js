@@ -2,23 +2,102 @@
     "use strict";
 
     var startDate = new Date(window.SITE_CONFIG.counter.start_date + "T00:00:00Z");
+    var counterEl = document.getElementById("day-counter");
 
-    function updateCounter() {
+    function updateCounter(bpm) {
         var now = new Date();
         var utcNow = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
         var utcStart = Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
         var days = Math.floor((utcNow - utcStart) / (1000 * 60 * 60 * 24));
         var domain = "chunt" + days + ".org";
-        var el = document.getElementById("day-counter");
-        if (el) {
-            var link = document.createElement("a");
-            link.href = "https://" + domain;
+        if (!counterEl) return;
+
+        counterEl.innerHTML = "";
+        var link = document.createElement("a");
+        link.href = "https://" + domain;
+        link.className = "counter-link";
+
+        if (bpm) {
+            link.textContent = "chunt" + bpm + ".org";
+            link.href = "https://chunt" + bpm + ".org";
+        } else {
             link.textContent = domain;
-            link.className = "counter-link";
-            el.innerHTML = "";
-            el.appendChild(link);
         }
+
+        counterEl.appendChild(link);
     }
 
     updateCounter();
+
+    // BPM tap tempo
+    var titleCell = document.getElementById("header-title");
+    if (!titleCell) return;
+
+    var taps = [];
+    var beatInterval = null;
+    var currentBpm = 0;
+    var REQUIRED_TAPS = 4;
+    var TAP_TIMEOUT = 2000;
+
+    function triggerBeat(ms) {
+        titleCell.style.setProperty("--beat-ms", ms + "ms");
+        titleCell.classList.remove("bpm-beat");
+        // Force reflow to restart animation
+        void titleCell.offsetWidth;
+        titleCell.classList.add("bpm-beat");
+    }
+
+    function startPulse(bpm) {
+        stopPulse();
+        var ms = 60000 / bpm;
+        // Fire first beat immediately
+        triggerBeat(ms);
+        // Then keep firing on each beat
+        beatInterval = setInterval(function () {
+            triggerBeat(ms);
+        }, ms);
+    }
+
+    function stopPulse() {
+        if (beatInterval) {
+            clearInterval(beatInterval);
+            beatInterval = null;
+        }
+        titleCell.classList.remove("bpm-beat");
+        titleCell.style.removeProperty("--beat-ms");
+    }
+
+    titleCell.addEventListener("click", function (e) {
+        if (e.target.tagName === "A") return;
+
+        var now = performance.now();
+
+        // Reset if too long since last tap
+        if (taps.length > 0 && now - taps[taps.length - 1] > TAP_TIMEOUT) {
+            taps = [];
+            stopPulse();
+            currentBpm = 0;
+            updateCounter();
+        }
+
+        taps.push(now);
+
+        if (taps.length >= REQUIRED_TAPS) {
+            var intervals = [];
+            var start = taps.length - REQUIRED_TAPS;
+            for (var i = start + 1; i < taps.length; i++) {
+                intervals.push(taps[i] - taps[i - 1]);
+            }
+            var avgInterval = 0;
+            for (var j = 0; j < intervals.length; j++) {
+                avgInterval += intervals[j];
+            }
+            avgInterval /= intervals.length;
+
+            currentBpm = Math.round(60000 / avgInterval);
+            updateCounter(currentBpm);
+            startPulse(currentBpm);
+            taps = taps.slice(-REQUIRED_TAPS);
+        }
+    });
 })();
