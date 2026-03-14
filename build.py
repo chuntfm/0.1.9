@@ -82,26 +82,45 @@ def build():
     if "links" in client_config and "email" in client_config["links"]:
         del client_config["links"]["email"]
 
-    # Render HTML
-    html = env.get_template("index.html").render(
-        config=config,
-        config_json=json.dumps(client_config, indent=2),
-    )
-
-    # Render CSS
-    css = env.get_template("style.css").render(assets=assets)
-
-    # Render 404
-    page_404 = env.get_template("404.html").render(config=config)
+    config_json = json.dumps(client_config, indent=2)
 
     # Prepare dist
     if DIST.exists():
         shutil.rmtree(DIST)
     DIST.mkdir()
 
-    # Write HTML
-    (DIST / "index.html").write_text(html)
+    # Render pages
+    pages = config.get("pages", [])
+    for page in pages:
+        slug = page["slug"]
+        template_path = page["template"]
+        current_page = slug if slug != "" else "home"
+
+        html = env.get_template(template_path).render(
+            config=config,
+            config_json=config_json,
+            current_page=current_page,
+        )
+
+        if slug == "":
+            # Homepage
+            (DIST / "index.html").write_text(html)
+        else:
+            # Subpage: dist/{slug}/index.html
+            page_dir = DIST / slug
+            page_dir.mkdir(parents=True, exist_ok=True)
+            (page_dir / "index.html").write_text(html)
+
+    # Render 404
+    page_404 = env.get_template("404.html").render(
+        config=config,
+        config_json=config_json,
+        current_page="404",
+    )
     (DIST / "404.html").write_text(page_404)
+
+    # Render CSS
+    css = env.get_template("style.css").render(assets=assets)
 
     # Copy static assets
     if STATIC.exists():

@@ -6,6 +6,12 @@ site:
   footer_text: "Live, laugh, chunt."
   assets_url: ""
 
+pages:
+  - slug: ""
+    template: "pages/home.html"
+  - slug: "archive"
+    template: "pages/archive.html"
+
 api:
   base: "https://api.chunt.org"
   schedule_previous: "/schedule/previous"

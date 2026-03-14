@@ -1,0 +1,52 @@
+{#
+  content_row: Reusable 3-column table row matching the site grid.
+
+  Parameters:
+    label     – text for the left label column (optional)
+    id        – id attribute for the row div (optional)
+    body_id   – id attribute for the body (middle) cell (optional)
+    borders   – vertical border style:
+                "label" (default) – border between label and body only (col2+col3 merged)
+                "all"             – borders between all columns
+                "none"            – no vertical borders
+
+  Usage:
+    {% call content_row("NOW", id="now-row") %}
+      <div id="now-content">...</div>
+    {% endcall %}
+#}
+
+{% macro content_row(label="", id="", body_id="", borders="label") %}
+<div class="row"{% if id %} id="{{ id }}"{% endif %}>
+    <div class="cell cell-label{% if borders == 'none' %} cell-no-vborder{% endif %}">
+        {% if label %}<span class="section-label">{{ label }}</span>{% endif %}
+    </div>
+    <div class="cell{% if borders == 'label' %} cell-merge-right{% endif %}{% if borders == 'none' %} cell-no-vborder{% endif %}"{% if body_id %} id="{{ body_id }}"{% endif %}>
+        {{ caller() }}
+    </div>
+    <div class="cell cell-narrow{% if borders == 'label' %} cell-merge-left{% endif %}{% if borders == 'none' %} cell-no-vborder{% endif %}"></div>
+</div>
+{% endmacro %}
+
+
+{#
+  utility_row: Full-width single-cell row for controls, toggles, or labels.
+
+  Parameters:
+    id        – id attribute for the row div (optional)
+    cell_id   – id attribute for the cell (optional)
+    align     – text alignment: "left", "center", "right" (default: "right")
+
+  Usage:
+    {% call utility_row(id="tz-row", cell_id="tz-cell") %}
+      <label>...</label>
+    {% endcall %}
+#}
+
+{% macro utility_row(id="", cell_id="", align="right") %}
+<div class="row utility-row"{% if id %} id="{{ id }}"{% endif %}>
+    <div class="cell utility-cell" style="text-align: {{ align }}"{% if cell_id %} id="{{ cell_id }}"{% endif %}>
+        {{ caller() }}
+    </div>
+</div>
+{% endmacro %}

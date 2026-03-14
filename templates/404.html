@@ -1,35 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - {{ config.site.title }}</title>
-    <style>
-        :root {
-            --bg: {{ config.theme.light.bg }};
-            --fg: {{ config.theme.light.fg }};
-        }
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: {{ config.theme.dark.bg }};
-                --fg: {{ config.theme.dark.fg }};
-            }
-        }
-        body {
-            font-family: {{ config.theme.fonts.body }};
-            color: var(--fg);
-            background: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        a { color: var(--fg); }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}404 - {{ config.site.title }}{% endblock %}
+{% block content %}
+<div class="page-content">
     <p>Page not found. Discuss here: <a href="{{ config.links.special.chat.url }}">chuntoo.chatango.com</a>.</p>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,3 +1,4 @@
+{% from "macros.html" import utility_row %}
 {% set local = config.site.base_path ~ '/static' %}
 {% set assets = config.site.assets_url if config.site.assets_url else local %}
 <!DOCTYPE html>
@@ -5,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config.site.title }}</title>
+    <title>{% block title %}{{ config.site.title }}{% endblock %}</title>
     <meta name="description" content="{{ config.site.description }}">
     <link rel="icon" type="image/x-icon" href="{{ assets }}/images/web/favicons/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ assets }}/images/web/favicons/favicon-32x32.png">
@@ -58,14 +59,14 @@
 
     <!-- HEADER ROW -->
     <div class="row" id="header-row">
-        <a href="{{ config.site.url }}" class="cell cell-narrow" id="header-logo">
+        <a href="/" class="cell cell-narrow" id="header-logo">
             <img id="logo" src="{{ assets }}/images/web/logos/chuntfm_eye.svg" alt="ChuntFM logo">
         </a>
         <div class="cell" id="header-title">
             <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
         </div>
         <div class="cell cell-narrow" id="header-counter">
-            <span id="day-counter"><a href="https://chunt.org" class="counter-link">chunt.org</a></span>
+            <span id="day-counter"><a href="/" class="counter-link">chunt.org</a></span>
         </div>
     </div>
 
@@ -113,60 +114,22 @@
     </div>
 
     <!-- TIMEZONE TOGGLE ROW -->
-    <div class="row" id="tz-row">
-        <div class="cell" id="tz-cell" colspan="2">
-            <label class="tz-switch">
-                <input type="checkbox" id="tz-toggle" checked>
-                <span class="tz-option" id="tz-utc-label">UTC</span>
-                <span class="tz-slider"></span>
-                <span class="tz-option" id="tz-local-label">LOCAL</span>
-            </label>
-            <span id="tz-label" class="tz-current"></span>
-        </div>
-    </div>
+    {% call utility_row(id="tz-row", cell_id="tz-cell") %}
+        <label class="tz-switch">
+            <input type="checkbox" id="tz-toggle" checked>
+            <span class="tz-option" id="tz-utc-label">UTC</span>
+            <span class="tz-slider"></span>
+            <span class="tz-option" id="tz-local-label">LOCAL</span>
+        </label>
+        <span id="tz-label" class="tz-current"></span>
+    {% endcall %}
 
-    <!-- NOW ROW -->
-    <div class="row" id="now-row">
-        <div class="cell cell-label">
-            <span class="section-label">NOW</span>
-        </div>
-        <div class="cell" id="now-body">
-            <div id="now-content">
-                <p class="placeholder js-placeholder">Loading schedule...</p>
-                <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
-            </div>
-        </div>
-        <div class="cell cell-narrow cell-spacer"></div>
-    </div>
 
-    <!-- UP NEXT ROW -->
-    <div class="row" id="upnext-row">
-        <div class="cell cell-label">
-            <span class="section-label">UP NEXT</span>
-        </div>
-        <div class="cell" id="upnext-body">
-            <div id="upnext-content">
-                <p class="placeholder js-placeholder">Loading schedule...</p>
-                <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
-            </div>
-        </div>
-        <div class="cell cell-narrow cell-spacer"></div>
-    </div>
+</div>
 
-    <!-- PREVIOUS ROW -->
-    <div class="row" id="previous-row">
-        <div class="cell cell-label">
-            <span class="section-label">PREVIOUS</span>
-        </div>
-        <div class="cell" id="previous-body">
-            <div id="previous-content">
-                <p class="placeholder js-placeholder">Loading schedule...</p>
-                <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
-            </div>
-        </div>
-        <div class="cell cell-narrow cell-spacer"></div>
-    </div>
-
+<!-- SWAPPABLE CONTENT -->
+<div id="swup-content" class="transition-main" data-page="{{ current_page }}">
+{% block content %}{% endblock %}
 </div>
 
 <!-- FOOTER -->
@@ -185,6 +148,7 @@
 <script src="{{ local }}/js/player.js"></script>
 <script src="{{ local }}/js/schedule.js"></script>
 <script src="{{ local }}/js/theme.js"></script>
+<script src="{{ local }}/js/swup-init.js"></script>
 {% if config.analytics.goatcounter.enabled %}
 <script data-goatcounter="{{ config.analytics.goatcounter.url or ('https://' ~ config.analytics.goatcounter.id ~ '.goatcounter.com/count') }}"
         async src="//gc.zgo.at/count.js"></script>

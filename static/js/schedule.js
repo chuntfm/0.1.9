@@ -24,11 +24,7 @@
 
     function updateTzLabel() {
         if (!tzLabel) return;
-        if (useUTC) {
-            tzLabel.textContent = "UTC";
-        } else {
-            tzLabel.textContent = getLocalTzAbbr();
-        }
+        tzLabel.textContent = "(" + getLocalTzAbbr() + ")";
     }
 
     if (tzToggle) {
@@ -36,7 +32,6 @@
         tzToggle.addEventListener("change", function () {
             useUTC = !this.checked;
             localStorage.setItem("timeDisplayMode", useUTC ? "utc" : "local");
-            updateTzLabel();
             reRenderAll();
         });
     }
@@ -191,6 +186,7 @@
     }
 
     function renderShows(container, shows, emptyMsg) {
+        if (!container) return;
         container.innerHTML = "";
         if (!shows || shows.length === 0) {
             var p = document.createElement("p");
@@ -277,6 +273,14 @@
             fetchPrevious();
         });
     }
+
+    // Re-query swappable DOM containers (called after swup page swap)
+    window.__initSchedule = function () {
+        nowContent = document.getElementById("now-content");
+        upnextContent = document.getElementById("upnext-content");
+        previousContent = document.getElementById("previous-content");
+        reRenderAll();
+    };
 
     document.addEventListener("DOMContentLoaded", function () {
         updateTzLabel();

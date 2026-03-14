@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% from "macros.html" import content_row %}
+{% block title %}Archive - {{ config.site.title }}{% endblock %}
+{% block content %}
+<div id="content-table">
+    {% call content_row("ARCHIVE", id="archive-row") %}
+        <p>Coming soon.</p>
+    {% endcall %}
+</div>
+{% endblock %}
