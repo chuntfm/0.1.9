@@ -233,6 +233,20 @@
         });
     }
 
+    // Double-tap anywhere on mini-player scrolls to top (mobile)
+    var lastTapTime = 0;
+    if (miniPlayer) {
+        miniPlayer.addEventListener("click", function (e) {
+            // Don't interfere with play/stop buttons or now-playing text
+            if (e.target === miniPlayBtn || e.target === miniStopBtn || e.target === miniNowPlaying) return;
+            var now = Date.now();
+            if (now - lastTapTime < 400) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+            lastTapTime = now;
+        });
+    }
+
     // --- Media Session API ---
 
     function getCurrentShowTitle() {
