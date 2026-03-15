@@ -61,6 +61,9 @@ analytics:
     id: ""
     url: ""
 
+build:
+  temperature_url: "https://api.open-meteo.com/v1/forecast?latitude=53.1446&longitude=0.3424&current=temperature_2m"
+
 theme:
   fonts:
     body: "'Courier Prime', 'Courier New', monospace"

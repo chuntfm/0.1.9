@@ -73,6 +73,34 @@ def fetch_json(url, timeout=5):
         return None
 
 
+def fetch_skegness_temperature(url):
+    """Fetch current temperature from Open-Meteo. Returns celsius or None."""
+    data = fetch_json(url)
+    if data and "current" in data:
+        return data["current"].get("temperature_2m")
+    return None
+
+
+def temperature_to_bg(temp_c, base_hex):
+    """Map temperature to a light-mode background with a subtle pink tint.
+
+    0C or below: base color unchanged.
+    35C or above: max subtle warm pink shift (R+2, G-10, B-12).
+    Linear interpolation in between.
+    """
+    base_hex = base_hex.lstrip("#")
+    base_r, base_g, base_b = int(base_hex[0:2], 16), int(base_hex[2:4], 16), int(base_hex[4:6], 16)
+
+    if temp_c is None or temp_c <= 0:
+        return f"#{base_r:02x}{base_g:02x}{base_b:02x}"
+
+    t = min(temp_c / 35.0, 1.0)
+    r = min(round(base_r + 2 * t), 255)
+    g = max(round(base_g - 10 * t), 0)
+    b = max(round(base_b - 12 * t), 0)
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
 def build():
     # Read config
     with open(ROOT / "site.yaml") as f:
@@ -80,6 +108,16 @@ def build():
 
     # Apply environment variable overrides
     apply_env_overrides(config)
+
+    # Temperature-based light mode background
+    temp_url = config.get("build", {}).get("temperature_url")
+    temp = fetch_skegness_temperature(temp_url) if temp_url else None
+    if temp is not None:
+        base_bg = config["theme"]["light"]["bg"]
+        print(f"Skegness temperature: {temp}C")
+        config["theme"]["light"]["bg"] = temperature_to_bg(temp, base_bg)
+    else:
+        print("Skegness temperature: unavailable, using default bg")
 
     # Set up Jinja2
     env = Environment(loader=FileSystemLoader(str(TEMPLATES)))
