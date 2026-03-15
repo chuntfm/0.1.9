@@ -359,6 +359,11 @@ body::before {
     padding: 0.25rem 0;
 }
 
+#links-collapse {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
 .links-toggle-btn:hover {
     text-decoration: underline;
 }
@@ -381,6 +386,7 @@ body::before {
     padding: 0.15rem 0;
     display: block;
     opacity: 0.4;
+    white-space: normal;
 }
 
 #links-expanded {
