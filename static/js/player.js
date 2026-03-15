@@ -306,11 +306,11 @@
     // Player cell: drag = volume, click = play/stop
     playerCell.addEventListener("mousedown", function (e) {
         if (e.target.closest("#audio-player")) return;
-        volDragStart(e);
+        volDragStart(e, true);
     });
     playerCell.addEventListener("touchstart", function (e) {
         if (e.target.closest("#audio-player")) return;
-        volDragStart(e);
+        volDragStart(e, true);
     }, { passive: true });
     playerCell.addEventListener("click", function () {
         if (volDragState.moved) return;

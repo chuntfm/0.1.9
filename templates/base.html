@@ -47,6 +47,7 @@
     <script>
         (function(){var t=localStorage.getItem('themeMode');if(t)document.documentElement.setAttribute('data-theme',t);})();
         document.documentElement.classList.add('js');
+        if('scrollRestoration' in history)history.scrollRestoration='manual';
     </script>
     <noscript><style>#tz-row { display: none; } .js-only { display: none; } #player-section { cursor: default; } .js-placeholder { display: none; }</style></noscript>
     <script>
