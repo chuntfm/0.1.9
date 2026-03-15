@@ -304,14 +304,13 @@ body::before {
     white-space: nowrap;
 }
 
-#links-collapsed .nav-link,
-#links-collapsed .links-quote {
-    display: inline;
+#links-collapsed .nav-link {
     padding: 0;
 }
 
 .links-toggle-btn {
-    display: inline-block;
+    display: block;
+    margin: 0 auto;
     background: none;
     border: none;
     font-family: var(--font-heading);
@@ -326,22 +325,24 @@ body::before {
     text-decoration: underline;
 }
 
-#links-rotating {
-    transition: opacity 0.3s;
-    display: block;
-}
-
 .nav-link-inline {
     display: inline;
 }
 
+.links-separator {
+    border-top: 1px solid var(--fg);
+    opacity: 0.15;
+    margin: 0.3rem 0;
+}
+
 .links-quote {
     font-family: var(--font-heading);
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 0.25rem 0;
+    padding: 0.15rem 0;
     display: block;
+    opacity: 0.4;
 }
 
 #links-expanded {
@@ -378,6 +379,19 @@ html.is-changing .transition-main {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
+}
+
+.col-group {
+    display: table-column-group;
+}
+
+.col-narrow {
+    display: table-column;
+    width: 24%;
+}
+
+.col-body {
+    display: table-column;
 }
 
 /* === SUBPAGE CONTENT === */
@@ -581,6 +595,148 @@ html.is-changing .transition-main {
     overflow-y: auto;
 }
 
+/* === ARCHIVE === */
+
+#archive-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.archive-search-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    opacity: 0.4;
+}
+
+#archive-search-wrap:focus-within .archive-search-icon {
+    opacity: 0.7;
+}
+
+#archive-search {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--fg);
+    padding: 0.3rem 0;
+    outline: none;
+}
+
+#archive-search::placeholder {
+    color: var(--fg);
+    opacity: 0.4;
+}
+
+#archive-tags {
+}
+
+#archive-row .cell {
+    vertical-align: top;
+}
+
+.archive-tag {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.15rem 0;
+    opacity: 0.5;
+    cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
+    transition: opacity 0.15s;
+}
+
+.archive-tag:hover {
+    opacity: 1;
+}
+
+.archive-tag.active {
+    opacity: 1;
+    color: var(--highlight);
+    font-weight: 700;
+}
+
+.archive-tag-count {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    opacity: 0.5;
+}
+
+.archive-tag-clear {
+    color: var(--highlight);
+    font-weight: 700;
+    opacity: 1;
+    margin-bottom: 0.25rem;
+}
+
+.archive-tag-more {
+    color: var(--highlight);
+    font-weight: 700;
+    opacity: 1;
+    margin-top: 0.25rem;
+}
+
+.archive-count {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 0.75rem;
+}
+
+.archive-warning {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 0.75rem;
+}
+
+.archive-entry {
+    margin-bottom: 0.5rem;
+}
+
+.archive-entry:last-child {
+    margin-bottom: 0;
+}
+
+.archive-date {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    opacity: 0.5;
+    display: block;
+}
+
+.archive-title {
+    font-weight: 700;
+    color: var(--fg);
+    text-decoration: none;
+}
+
+.archive-title:hover {
+    text-decoration: underline;
+    color: var(--highlight);
+}
+
+.archive-duration {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    margin-left: 0.5rem;
+}
+
+.archive-genres {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
 /* === FOOTER === */
 #site-footer {
     text-align: center;
@@ -651,6 +807,7 @@ html.is-changing .transition-main {
     #header-counter {
         width: 21%;
     }
+
 }
 
 @media (max-width: 768px) {
@@ -762,5 +919,17 @@ html.is-changing .transition-main {
 
     .cell-spacer {
         display: none;
+    }
+
+    #archive-search {
+        max-width: 100%;
+    }
+
+    #archive-tags {
+        max-height: none;
+        overflow-y: visible;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 0.75rem;
     }
 }
