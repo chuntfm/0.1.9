@@ -46,6 +46,44 @@ body::before {
     background-size: 256px 256px;
 }
 
+/* === SKIP LINK === */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 999;
+    padding: 0.5rem 1rem;
+    background: var(--highlight);
+    color: var(--bg);
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    left: 0;
+}
+
+/* === SCREEN READER ONLY === */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* === FOCUS VISIBLE === */
+:focus-visible {
+    outline: 2px solid var(--highlight);
+    outline-offset: 2px;
+}
+
 /* === TABLE LAYOUT === */
 #site-table {
     display: table;
@@ -638,6 +676,13 @@ html.is-changing .transition-main {
     vertical-align: top;
 }
 
+button.archive-tag {
+    background: none;
+    border: none;
+    color: inherit;
+    display: block;
+}
+
 .archive-tag {
     font-family: var(--font-heading);
     font-size: 0.7rem;
@@ -770,6 +815,10 @@ html.is-changing .transition-main {
     transform: translateY(100%);
 }
 
+button.mini-btn {
+    background: none;
+}
+
 .mini-btn {
     touch-action: manipulation;
     font-family: var(--font-heading);
@@ -797,6 +846,12 @@ html.is-changing .transition-main {
     white-space: nowrap;
     min-width: 0;
     transition: opacity 0.3s;
+    background: none;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    padding: 0;
+    cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
 }
 
 /* === MOBILE === */

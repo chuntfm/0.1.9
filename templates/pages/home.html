@@ -4,21 +4,21 @@
 {% block content %}
 <div id="content-table">
     {% call content_row("NOW", id="now-row", body_id="now-body") %}
-        <div id="now-content">
+        <div id="now-content" aria-live="polite">
             <p class="placeholder js-placeholder">Loading schedule...</p>
             <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
         </div>
     {% endcall %}
 
     {% call content_row("UP NEXT", id="upnext-row", body_id="upnext-body") %}
-        <div id="upnext-content">
+        <div id="upnext-content" aria-live="polite">
             <p class="placeholder js-placeholder">Loading schedule...</p>
             <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
         </div>
     {% endcall %}
 
     {% call content_row("PREVIOUS", id="previous-row", body_id="previous-body") %}
-        <div id="previous-content">
+        <div id="previous-content" aria-live="polite">
             <p class="placeholder js-placeholder">Loading schedule...</p>
             <noscript><p class="placeholder">Schedule requires JavaScript.</p></noscript>
         </div>

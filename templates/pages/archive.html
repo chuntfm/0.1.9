@@ -11,13 +11,13 @@
 
     {% call utility_row(id="archive-search-row", align="left") %}
         <div id="archive-search-wrap">
-            <svg class="archive-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="archive-search" placeholder="search shows..." autocomplete="off" spellcheck="false">
+            <svg class="archive-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="archive-search" placeholder="search shows..." autocomplete="off" spellcheck="false" aria-label="Search archive shows">
         </div>
     {% endcall %}
 
     {% call content_row("", id="archive-row", label_id="archive-label-cell") %}
-        <div id="archive-content">
+        <div id="archive-content" aria-live="polite">
             {% if archive_data is defined and archive_data %}
             <div class="archive-count">{{ archive_data | length }} show{{ 's' if archive_data | length != 1 else '' }} (by recent uploads)</div>
             {% for show in archive_data %}

@@ -55,6 +55,9 @@
 </head>
 <body>
 
+<a href="#swup-content" class="skip-link">Skip to content</a>
+
+<header>
 <div id="site-table">
 
     <!-- HEADER ROW -->
@@ -98,7 +101,7 @@
                 {% endif %}
                 <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
             </div>
-            <div id="links-expanded">
+            <nav id="links-expanded" aria-label="Site navigation">
                 {% for page in nav_pages %}
                 <a href="/{{ page.slug ~ '/' if page.slug else '' }}" class="nav-link">{{ page.nav_name | upper }}</a>
                 {% endfor %}
@@ -118,7 +121,7 @@
                 <span class="links-quote">{{ random_quote }}</span>
                 {% endif %}
                 <button id="links-collapse" class="links-toggle-btn js-only">x</button>
-            </div>
+            </nav>
             <script>
                 document.getElementById('links-collapsed').hidden = false;
                 document.getElementById('links-expanded').hidden = true;
@@ -129,7 +132,7 @@
     <!-- TIMEZONE TOGGLE ROW -->
     {% call utility_row(id="tz-row", cell_id="tz-cell") %}
         <label class="tz-switch">
-            <input type="checkbox" id="tz-toggle" checked>
+            <input type="checkbox" id="tz-toggle" checked aria-label="Toggle timezone display">
             <span class="tz-option" id="tz-utc-label">UTC</span>
             <span class="tz-slider"></span>
             <span class="tz-option" id="tz-local-label">LOCAL</span>
@@ -139,23 +142,26 @@
 
 
 </div>
+</header>
 
 <!-- SWAPPABLE CONTENT -->
-<div id="swup-content" class="transition-main" data-page="{{ current_page }}">
+<main id="swup-content" class="transition-main" data-page="{{ current_page }}" tabindex="-1">
 {% block content %}{% endblock %}
-</div>
+</main>
 
 <!-- FOOTER -->
-<div id="site-footer">
+<footer id="site-footer">
     <span class="footer-text">{{ config.site.footer_text }}</span>
-</div>
+</footer>
 
 <!-- MINI PLAYER (fixed bottom bar) -->
 <div id="mini-player" class="mini-player hidden">
-    <span id="mini-play-btn" class="mini-btn" role="button" tabindex="0">PLAY</span>
-    <span id="mini-stop-btn" class="mini-btn" role="button" tabindex="0" hidden>STOP</span>
-    <span id="mini-now-playing" role="button" tabindex="0" style="cursor:pointer"></span>
+    <button id="mini-play-btn" class="mini-btn" type="button" aria-label="Play">PLAY</button>
+    <button id="mini-stop-btn" class="mini-btn" type="button" aria-label="Stop" hidden>STOP</button>
+    <button id="mini-now-playing" type="button" aria-label="Scroll to top"></button>
 </div>
+
+<div id="page-announce" aria-live="assertive" class="sr-only"></div>
 
 <script src="{{ local }}/js/counter.js"></script>
 <script src="{{ local }}/js/player.js"></script>

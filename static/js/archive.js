@@ -112,7 +112,8 @@
         var hasActive = Object.keys(activeTags).some(function (k) { return activeTags[k]; });
 
         if (hasActive) {
-            var clearBtn = document.createElement("div");
+            var clearBtn = document.createElement("button");
+            clearBtn.type = "button";
             clearBtn.className = "archive-tag archive-tag-clear";
             clearBtn.textContent = "CLEAR";
             clearBtn.onclick = onTagClear;
@@ -126,7 +127,8 @@
         var hasMore = isMobile && !expanded && cachedTags.length > TAG_LIMIT;
 
         visibleTags.forEach(function (tag) {
-            var el = document.createElement("div");
+            var el = document.createElement("button");
+            el.type = "button";
             el.className = "archive-tag";
             var key = tag.name.toLowerCase();
             if (activeTags[key]) {
@@ -147,7 +149,8 @@
         });
 
         if (hasMore) {
-            var moreBtn = document.createElement("div");
+            var moreBtn = document.createElement("button");
+            moreBtn.type = "button";
             moreBtn.className = "archive-tag archive-tag-more";
             moreBtn.textContent = "MORE (" + (cachedTags.length - TAG_LIMIT) + ")";
             moreBtn.onclick = function () {
@@ -158,7 +161,8 @@
         }
 
         if (isMobile && expanded && cachedTags.length > TAG_LIMIT) {
-            var lessBtn = document.createElement("div");
+            var lessBtn = document.createElement("button");
+            lessBtn.type = "button";
             lessBtn.className = "archive-tag archive-tag-more";
             lessBtn.textContent = "LESS";
             lessBtn.onclick = function () {

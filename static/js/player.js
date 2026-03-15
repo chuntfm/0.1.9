@@ -53,8 +53,12 @@
         playerCell.classList.remove("playing", "loading");
         if (state === "playing") {
             playerCell.classList.add("playing");
+            playerCell.setAttribute("aria-label", "Stop");
         } else if (state === "loading") {
             playerCell.classList.add("loading");
+            playerCell.setAttribute("aria-label", "Loading");
+        } else {
+            playerCell.setAttribute("aria-label", "Play");
         }
         var isPlaying = state === "playing";
         var isActive = state !== "idle";

@@ -41,6 +41,18 @@
             // Update collapsed nav link for current page
             updateCollapsedNav();
 
+            // Focus management for accessibility
+            var swupEl = document.getElementById("swup-content");
+            if (swupEl) {
+                swupEl.focus({ preventScroll: true });
+            }
+
+            // Announce page change to screen readers
+            var announcer = document.getElementById("page-announce");
+            if (announcer) {
+                announcer.textContent = document.title;
+            }
+
             // GoatCounter tracking on swap
             if (typeof window.goatcounter !== "undefined" && window.goatcounter.count) {
                 window.goatcounter.count({
