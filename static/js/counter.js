@@ -34,6 +34,21 @@
         counterEl.appendChild(link);
     }
 
+    // On 404 page, show chunt404.org instead of day count
+    var pageEl = document.getElementById("swup-content");
+    var is404 = pageEl && pageEl.getAttribute("data-page") === "404";
+    if (is404) {
+        if (counterEl) {
+            counterEl.innerHTML = "";
+            var link = document.createElement("a");
+            link.href = "https://chunt404.org";
+            link.className = "counter-link";
+            link.textContent = "chunt404.org";
+            counterEl.appendChild(link);
+        }
+        return;
+    }
+
     updateCounter();
 
     // BPM tap tempo
