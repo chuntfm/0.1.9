@@ -31,9 +31,15 @@
             if (typeof window.__initSchedule === "function") {
                 window.__initSchedule();
             }
+            if (typeof window.__initArchive === "function") {
+                window.__initArchive();
+            }
 
             // Update tz-row visibility based on current page
             updateTzRowVisibility();
+
+            // Update collapsed nav link for current page
+            updateCollapsedNav();
 
             // GoatCounter tracking on swap
             if (typeof window.goatcounter !== "undefined" && window.goatcounter.count) {
@@ -45,6 +51,29 @@
 
         // Set initial tz-row visibility
         updateTzRowVisibility();
+    }
+
+    function updateCollapsedNav() {
+        var swupContent = document.getElementById("swup-content");
+        if (!swupContent) return;
+        var page = swupContent.getAttribute("data-page");
+        var currentSlug = page === "home" ? "" : page;
+        var pages = (window.SITE_CONFIG || {}).pages || [];
+        var currentPage = null;
+        for (var i = 0; i < pages.length; i++) {
+            if (pages[i].slug === currentSlug) { currentPage = pages[i]; break; }
+        }
+        if (!currentPage || currentPage.nav_default === undefined) return;
+        var defaultPage = null;
+        for (var j = 0; j < pages.length; j++) {
+            if (pages[j].slug === currentPage.nav_default) { defaultPage = pages[j]; break; }
+        }
+        if (!defaultPage) return;
+        var collapsedLink = document.querySelector("#links-collapsed .nav-link");
+        if (collapsedLink) {
+            collapsedLink.href = "/" + (defaultPage.slug ? defaultPage.slug + "/" : "");
+            collapsedLink.textContent = defaultPage.nav_name.toUpperCase();
+        }
     }
 
     function updateTzRowVisibility() {

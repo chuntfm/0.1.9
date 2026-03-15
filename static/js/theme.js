@@ -1,13 +1,12 @@
 (function () {
     "use strict";
 
-    // --- Links expand/collapse + rotation ---
+    // --- Links expand/collapse ---
 
     var linksToggle = document.getElementById("links-toggle");
     var linksCollapse = document.getElementById("links-collapse");
     var linksCollapsed = document.getElementById("links-collapsed");
     var linksExpanded = document.getElementById("links-expanded");
-    var linksRotating = document.getElementById("links-rotating");
 
     function expandLinks() {
         linksCollapsed.hidden = true;
@@ -24,53 +23,12 @@
     if (linksToggle) linksToggle.addEventListener("click", expandLinks);
     if (linksCollapse) linksCollapse.addEventListener("click", collapseLinks);
 
-    // Build rotation: primary links + quotes
-    var rotItems = [];
+    // Collapse drawer when an internal nav link is clicked
     if (linksExpanded) {
-        var allLinkEls = linksExpanded.querySelectorAll(".nav-link[data-primary]");
-        allLinkEls.forEach(function (el) {
-            rotItems.push({ type: "link", name: el.textContent, url: el.href });
+        var internalLinks = linksExpanded.querySelectorAll('.nav-link:not([target="_blank"])');
+        internalLinks.forEach(function (link) {
+            link.addEventListener("click", collapseLinks);
         });
-    }
-    (window.LINKS_QUOTES || []).forEach(function (q) {
-        rotItems.push({ type: "quote", text: q });
-    });
-
-    var rotIdx = 0;
-
-    function showRotItem(idx) {
-        if (!linksRotating || rotItems.length === 0) return;
-        var item = rotItems[idx];
-        linksRotating.innerHTML = "";
-        if (item.type === "link") {
-            var a = document.createElement("a");
-            a.href = item.url;
-            a.target = "_blank";
-            a.rel = "noopener";
-            a.className = "nav-link nav-link-inline";
-            a.textContent = item.name;
-            linksRotating.appendChild(a);
-        } else {
-            var span = document.createElement("span");
-            span.className = "links-quote";
-            span.textContent = item.text;
-            linksRotating.appendChild(span);
-        }
-    }
-
-    function rotateItem() {
-        if (rotItems.length <= 1) return;
-        linksRotating.style.opacity = "0";
-        setTimeout(function () {
-            rotIdx = (rotIdx + 1) % rotItems.length;
-            showRotItem(rotIdx);
-            linksRotating.style.opacity = "1";
-        }, 300);
-    }
-
-    if (rotItems.length > 0) {
-        showRotItem(0);
-        setInterval(rotateItem, 5000);
     }
 
     // --- Email obfuscation assembly ---

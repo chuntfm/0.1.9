@@ -87,13 +87,24 @@
             <span class="cell-btn-label">{{ config.links.special.chat.name | upper }}</span>
         </a>
         <div class="cell cell-narrow" id="links-cell">
+            {%- set nav_pages = config.pages | selectattr('nav_name', 'defined') | list -%}
+            {%- set current_slug = '' if current_page == 'home' else current_page -%}
+            {%- set current_nav = nav_pages | selectattr('slug', 'equalto', current_slug) | first -%}
+            {%- set default_slug = current_nav.nav_default if current_nav and current_nav.nav_default is defined else none -%}
+            {%- set default_page = nav_pages | selectattr('slug', 'equalto', default_slug) | first if default_slug is not none else none -%}
             <div id="links-collapsed" hidden>
-                <span id="links-rotating"></span>
+                {% if default_page %}
+                <a href="/{{ default_page.slug ~ '/' if default_page.slug else '' }}" class="nav-link">{{ default_page.nav_name | upper }}</a>
+                {% endif %}
                 <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
             </div>
             <div id="links-expanded">
+                {% for page in nav_pages %}
+                <a href="/{{ page.slug ~ '/' if page.slug else '' }}" class="nav-link">{{ page.nav_name | upper }}</a>
+                {% endfor %}
+                <div class="links-separator"></div>
                 {% for link in config.links.primary %}
-                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link" data-primary>{{ link.name | upper }}</a>
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a>
                 {% endfor %}
                 {% for link in config.links.secondary %}
                 <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a>
@@ -103,10 +114,12 @@
                       data-u="{{ config.links.email.split('@')[0] }}"
                       data-d="{{ config.links.email.split('@')[1] }}"></span>
                 {% endif %}
+                {% if random_quote %}
+                <span class="links-quote">{{ random_quote }}</span>
+                {% endif %}
                 <button id="links-collapse" class="links-toggle-btn js-only">x</button>
             </div>
             <script>
-                window.LINKS_QUOTES = {{ config.links.quotes | tojson }};
                 document.getElementById('links-collapsed').hidden = false;
                 document.getElementById('links-expanded').hidden = true;
             </script>
@@ -147,6 +160,7 @@
 <script src="{{ local }}/js/counter.js"></script>
 <script src="{{ local }}/js/player.js"></script>
 <script src="{{ local }}/js/schedule.js"></script>
+<script src="{{ local }}/js/archive.js"></script>
 <script src="{{ local }}/js/theme.js"></script>
 <script src="{{ local }}/js/swup-init.js"></script>
 {% if config.analytics.goatcounter.enabled %}
