@@ -20,6 +20,100 @@
     var reconnectTimer = null;
     var lastCurrentTime = 0;
 
+    // --- Volume ---
+
+    var currentVolume = parseFloat(localStorage.getItem("volume"));
+    if (isNaN(currentVolume)) currentVolume = 1.0;
+    var playerDot = document.getElementById("player-dot");
+    var miniVolDot = document.getElementById("mini-vol-dot");
+
+    function setVolume(vol) {
+        currentVolume = Math.max(0, Math.min(1, vol));
+        try { audio.volume = currentVolume; } catch (e) {}
+        localStorage.setItem("volume", currentVolume);
+        updateVolumeDots();
+    }
+
+    function updateVolumeDots() {
+        var minScale = 0.15;
+        var scale = minScale + currentVolume * (1 - minScale);
+        var pct = Math.round(currentVolume * 100);
+
+        if (playerDot) {
+            playerDot.style.setProperty("--vol-scale", scale);
+            playerDot.setAttribute("aria-valuenow", pct);
+            playerDot.setAttribute("aria-label", "Volume " + pct + "%");
+        }
+        if (miniVolDot) {
+            miniVolDot.style.setProperty("--vol-scale", scale);
+            miniVolDot.setAttribute("aria-valuenow", pct);
+            miniVolDot.setAttribute("aria-label", "Volume " + pct + "%");
+        }
+    }
+
+    // --- Volume drag handler ---
+    // Tracks vertical drag on an element. Returns whether a drag occurred
+    // so callers can distinguish drag from click.
+
+    var volDragState = { dragging: false, moved: false, startX: 0, startY: 0, startVol: 0, horizontal: false };
+    var DRAG_THRESHOLD = 5;
+
+    function volDragStart(e, horizontal) {
+        volDragState.dragging = true;
+        volDragState.moved = false;
+        volDragState.horizontal = !!horizontal;
+        var point = e.touches ? e.touches[0] : e;
+        volDragState.startX = point.clientX;
+        volDragState.startY = point.clientY;
+        volDragState.startVol = currentVolume;
+    }
+
+    function volDragMove(e) {
+        if (!volDragState.dragging) return;
+        var point = e.touches ? e.touches[0] : e;
+        var d = volDragState.horizontal
+            ? point.clientX - volDragState.startX
+            : volDragState.startY - point.clientY;
+        if (Math.abs(d) > DRAG_THRESHOLD) {
+            volDragState.moved = true;
+        }
+        if (volDragState.moved) {
+            var delta = d / 150;
+            setVolume(volDragState.startVol + delta);
+        }
+    }
+
+    function volDragEnd() {
+        volDragState.dragging = false;
+    }
+
+    document.addEventListener("mousemove", volDragMove);
+    document.addEventListener("touchmove", volDragMove, { passive: false });
+    document.addEventListener("mouseup", volDragEnd);
+    document.addEventListener("touchend", volDragEnd);
+
+    function initVolumeDot(dot) {
+        if (!dot) return;
+
+        dot.setAttribute("role", "slider");
+        dot.setAttribute("aria-valuemin", "0");
+        dot.setAttribute("aria-valuemax", "100");
+        dot.setAttribute("aria-valuenow", Math.round(currentVolume * 100));
+        dot.setAttribute("aria-label", "Volume " + Math.round(currentVolume * 100) + "%");
+        dot.setAttribute("tabindex", "0");
+
+        // Keyboard: arrow up/down adjusts volume in 10% steps
+        dot.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setVolume(currentVolume + 0.1);
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setVolume(currentVolume - 0.1);
+            }
+        });
+    }
+
     // --- Playback ---
 
     function timestampedUrl() {
@@ -209,7 +303,17 @@
 
     // --- Button handlers ---
 
+    // Player cell: drag = volume, click = play/stop
+    playerCell.addEventListener("mousedown", function (e) {
+        if (e.target.closest("#audio-player")) return;
+        volDragStart(e);
+    });
+    playerCell.addEventListener("touchstart", function (e) {
+        if (e.target.closest("#audio-player")) return;
+        volDragStart(e);
+    }, { passive: true });
     playerCell.addEventListener("click", function () {
+        if (volDragState.moved) return;
         if (userPaused) { play(); } else { stop(); }
     });
     playerCell.addEventListener("keydown", function (e) {
@@ -218,8 +322,32 @@
             if (userPaused) { play(); } else { stop(); }
         }
     });
-    miniPlayBtn.addEventListener("click", play);
-    miniStopBtn.addEventListener("click", stop);
+
+    // Mini-player buttons: drag = volume (horizontal), click = play/stop
+    miniPlayBtn.addEventListener("mousedown", function (e) { volDragStart(e, true); });
+    miniPlayBtn.addEventListener("touchstart", function (e) { volDragStart(e, true); }, { passive: true });
+    miniPlayBtn.addEventListener("click", function () {
+        if (volDragState.moved) return;
+        play();
+    });
+    miniStopBtn.addEventListener("mousedown", function (e) { volDragStart(e, true); });
+    miniStopBtn.addEventListener("touchstart", function (e) { volDragStart(e, true); }, { passive: true });
+    miniStopBtn.addEventListener("click", function () {
+        if (volDragState.moved) return;
+        stop();
+    });
+
+    // Mini-player bar: drag = volume (horizontal)
+    if (miniPlayer) {
+        miniPlayer.addEventListener("mousedown", function (e) {
+            if (e.target === miniPlayBtn || e.target === miniStopBtn) return;
+            volDragStart(e, true);
+        });
+        miniPlayer.addEventListener("touchstart", function (e) {
+            if (e.target === miniPlayBtn || e.target === miniStopBtn) return;
+            volDragStart(e, true);
+        }, { passive: true });
+    }
 
     // Spacebar toggle (only when not typing in an input)
     document.addEventListener("keydown", function (e) {
@@ -233,6 +361,7 @@
     var miniNowPlaying = document.getElementById("mini-now-playing");
     if (miniNowPlaying) {
         miniNowPlaying.addEventListener("click", function () {
+            if (volDragState.moved) return;
             window.scrollTo({ top: 0, behavior: "smooth" });
         });
     }
@@ -241,7 +370,7 @@
     var lastTapTime = 0;
     if (miniPlayer) {
         miniPlayer.addEventListener("click", function (e) {
-            // Don't interfere with play/stop buttons or now-playing text
+            if (volDragState.moved) return;
             if (e.target === miniPlayBtn || e.target === miniStopBtn || e.target === miniNowPlaying) return;
             var now = Date.now();
             if (now - lastTapTime < 400) {
@@ -409,5 +538,9 @@
         spinRandomLetter();
         setInterval(spinRandomLetter, 600000);
         setInterval(rotateMiniTitle, 5000);
+        try { audio.volume = currentVolume; } catch (e) {}
+        initVolumeDot(playerDot);
+        initVolumeDot(miniVolDot);
+        updateVolumeDots();
     });
 })();

@@ -259,20 +259,40 @@ body::before {
     display: inline-block;
     width: 1.3em;
     height: 1.3em;
-    border-radius: 50%;
-    background: var(--fg);
     vertical-align: middle;
     position: relative;
     top: -0.22em;
     margin-right: 0.5rem;
     font-size: inherit;
+    background: transparent;
 }
 
-#player-section:hover .player-dot {
+.player-dot::after,
+.mini-vol-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--fg);
+    transition: transform 0.15s ease;
+    transform: scale(var(--vol-scale, 1));
+}
+
+.player-dot,
+.mini-vol-dot {
+    cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
+}
+
+.player-dot:active,
+.mini-vol-dot:active {
+    cursor: ns-resize;
+}
+
+#player-section:hover .player-dot::after {
     background: var(--bg);
 }
 
-#player-section.playing .player-dot {
+#player-section.playing .player-dot::after {
     background: var(--bg);
 }
 
@@ -840,6 +860,16 @@ button.mini-btn {
 .mini-btn:hover {
     background: var(--highlight);
     color: var(--bg);
+}
+
+.mini-vol-dot {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    position: relative;
+    flex-shrink: 0;
+    vertical-align: middle;
+    background: transparent;
 }
 
 #mini-now-playing {
