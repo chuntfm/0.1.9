@@ -9,14 +9,19 @@ site:
 pages:
   - slug: ""
     template: "pages/home.html"
+    nav_name: "Schedule"
+    nav_default: "archive"
   - slug: "archive"
     template: "pages/archive.html"
+    nav_name: "Archive"
+    nav_default: ""
 
 api:
   base: "https://api.chunt.org"
   schedule_previous: "/schedule/previous"
   schedule_upnext: "/schedule/upnext"
   now_playing: "/fm/channels/1/now-playing"
+  mixcloud_archive: "https://assets.chunt.org/mixcloud_archive.slim.json"
 
 streams:
   default: "https://api.chunt.org/fm/channels/1/stream/default/play"
@@ -46,9 +51,9 @@ counter:
   start_date: "2022-03-14"
 
 polling:
-  now_playing: 0
-  schedule_upnext: 0
-  schedule_previous: 0
+  now_playing: 30
+  schedule_upnext: 60
+  schedule_previous: 300
 
 analytics:
   goatcounter:

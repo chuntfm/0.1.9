@@ -3,7 +3,9 @@
 
 import json
 import os
+import random
 import shutil
+import urllib.request
 from pathlib import Path
 
 import yaml
@@ -60,6 +62,17 @@ def apply_env_overrides(config, prefix="SITE"):
     _walk(config, [prefix])
 
 
+def fetch_json(url, timeout=5):
+    """Fetch and parse JSON from a URL. Returns parsed data or None on failure."""
+    try:
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode())
+    except Exception as e:
+        print(f"Warning: failed to fetch {url}: {e}")
+        return None
+
+
 def build():
     # Read config
     with open(ROOT / "site.yaml") as f:
@@ -84,6 +97,21 @@ def build():
 
     config_json = json.dumps(client_config, indent=2)
 
+    # Fetch archive data at build time
+    archive_data = None
+    archive_url = config.get("api", {}).get("mixcloud_archive")
+    if archive_url:
+        archive_data = fetch_json(archive_url)
+        if archive_data is not None:
+            archive_data.sort(
+                key=lambda s: (s.get("info") or {}).get("date", ""),
+                reverse=True,
+            )
+
+    # Pick a random quote for this build
+    quotes = config.get("links", {}).get("quotes", [])
+    random_quote = random.choice(quotes) if quotes else None
+
     # Prepare dist
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -96,10 +124,17 @@ def build():
         template_path = page["template"]
         current_page = slug if slug != "" else "home"
 
+        # Pass archive data only to the archive page
+        extra = {}
+        if slug == "archive" and archive_data is not None:
+            extra["archive_data"] = archive_data
+
         html = env.get_template(template_path).render(
             config=config,
             config_json=config_json,
             current_page=current_page,
+            random_quote=random_quote,
+            **extra,
         )
 
         if slug == "":
@@ -116,6 +151,7 @@ def build():
         config=config,
         config_json=config_json,
         current_page="404",
+        random_quote=random_quote,
     )
     (DIST / "404.html").write_text(page_404)
 
