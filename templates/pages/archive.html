@@ -1,10 +1,48 @@
 {% extends "base.html" %}
-{% from "macros.html" import content_row %}
+{% from "macros.html" import utility_row, content_row %}
 {% block title %}Archive - {{ config.site.title }}{% endblock %}
 {% block content %}
 <div id="content-table">
-    {% call content_row("ARCHIVE", id="archive-row") %}
-        <p>Coming soon.</p>
+    <div class="col-group">
+        <div class="col-narrow"></div>
+        <div class="col-body"></div>
+        <div class="col-narrow"></div>
+    </div>
+
+    {% call utility_row(id="archive-search-row", align="left") %}
+        <div id="archive-search-wrap">
+            <svg class="archive-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="archive-search" placeholder="search shows..." autocomplete="off" spellcheck="false">
+        </div>
     {% endcall %}
+
+    {% call content_row("", id="archive-row", label_id="archive-label-cell") %}
+        <div id="archive-content">
+            {% if archive_data is defined and archive_data %}
+            <div class="archive-count">{{ archive_data | length }} show{{ 's' if archive_data | length != 1 else '' }} (by recent uploads)</div>
+            {% for show in archive_data %}
+            {%- set info = show.get('info') or {} -%}
+            {%- set tags = info.get('tags') or [] -%}
+            {%- set secs = show.get('audio_length', 0) -%}
+            {%- set h = (secs // 3600) -%}
+            {%- set m = ((secs % 3600) // 60) -%}
+            <div class="archive-entry">
+                <span class="archive-date">{{ info.get('date', '') }}</span>
+                <a class="archive-title" href="{{ show.get('url', '#') }}" target="_blank" rel="noopener">{{ info.get('title') or show.get('name', '') }}</a>
+                <span class="archive-duration">{% if h > 0 %}{{ h }}h {{ m }}m{% else %}{{ m }}m{% endif %}</span>
+                {% if tags %}<span class="archive-genres">{{ tags | join(', ') }}</span>{% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="placeholder js-placeholder">Loading archive...</p>
+            <noscript><p class="placeholder">Archive requires JavaScript.</p></noscript>
+            {% endif %}
+        </div>
+    {% endcall %}
+
+    {% if archive_data is defined and archive_data %}
+    <script id="archive-data" type="application/json">{{ archive_data | tojson }}</script>
+    {% endif %}
+
 </div>
 {% endblock %}
