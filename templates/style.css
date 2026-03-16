@@ -643,14 +643,25 @@ html.is-changing .transition-main {
     text-transform: uppercase;
 }
 
-.restream-link {
-    font-size: 0.8rem;
-    color: var(--highlight);
+.restream-mixcloud-link {
+    color: var(--fg);
     text-decoration: none;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+    vertical-align: middle;
 }
 
-.restream-link:hover {
-    text-decoration: underline;
+.restream-mixcloud-link:hover {
+    opacity: 1;
+    color: var(--highlight);
+}
+
+.restream-mixcloud-icon {
+    width: 1.3em;
+    height: 1.3em;
+    vertical-align: middle;
+    position: relative;
+    top: -0.1em;
 }
 
 #previous-body {
