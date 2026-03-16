@@ -706,7 +706,7 @@ html.is-changing .transition-main {
     background: transparent;
     border: none;
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1rem;
     letter-spacing: 0.08em;
     color: var(--fg);
     padding: 0.3rem 0;
