@@ -96,17 +96,9 @@
     function updateTzRowVisibility() {
         var swupContent = document.getElementById("swup-content");
         var tzRow = document.getElementById("tz-row");
-        var linksCell = document.getElementById("links-cell");
         if (!swupContent || !tzRow) return;
         var isHome = swupContent.getAttribute("data-page") === "home";
         tzRow.style.display = isHome ? "" : "none";
-        if (linksCell) {
-            if (isHome) {
-                linksCell.classList.add("tz-visible");
-            } else {
-                linksCell.classList.remove("tz-visible");
-            }
-        }
     }
 
     // Load swup CDN scripts then initialize
