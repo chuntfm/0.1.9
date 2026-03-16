@@ -1068,4 +1068,16 @@ button.mini-btn {
         flex-wrap: wrap;
         gap: 0 0.75rem;
     }
+
+    .mini-player {
+        bottom: auto;
+        top: 0;
+        border-top: none;
+        border-bottom: 1px solid var(--border);
+        padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 1.25rem 0.75rem;
+    }
+
+    .mini-player.hidden {
+        transform: translateY(-100%);
+    }
 }
