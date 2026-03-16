@@ -850,6 +850,7 @@ button.mini-btn {
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: 0.1em;
+    color: var(--fg);
     cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
     padding: 0.3rem 0.7rem;
     border: 1px solid var(--border);
