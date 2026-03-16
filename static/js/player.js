@@ -450,22 +450,47 @@
         }
     }, 30000);
 
-    // --- IntersectionObserver for mini-player ---
+    // --- Mini-player visibility (scroll direction + intersection) ---
 
     var playerSection = document.getElementById("player-section");
+    var playerVisible = true;
+    var lastScrollY = window.scrollY;
+    var miniShown = false;
+
+    function updateMiniPlayer() {
+        if (playerVisible) {
+            // Main player in view — always hide mini
+            if (miniShown) {
+                miniPlayer.classList.add("hidden");
+                miniShown = false;
+            }
+        }
+    }
 
     if ("IntersectionObserver" in window && playerSection && miniPlayer) {
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    miniPlayer.classList.add("hidden");
-                } else {
-                    miniPlayer.classList.remove("hidden");
-                }
+                playerVisible = entry.isIntersecting;
+                updateMiniPlayer();
             });
         }, { threshold: 0 });
 
         observer.observe(playerSection);
+
+        window.addEventListener("scroll", function () {
+            if (playerVisible) return;
+            var currentY = window.scrollY;
+            if (currentY < lastScrollY && !miniShown) {
+                // Scrolling up — show
+                miniPlayer.classList.remove("hidden");
+                miniShown = true;
+            } else if (currentY > lastScrollY && miniShown) {
+                // Scrolling down — hide
+                miniPlayer.classList.add("hidden");
+                miniShown = false;
+            }
+            lastScrollY = currentY;
+        }, { passive: true });
     }
 
     // --- Random letter spin ---
