@@ -47,7 +47,9 @@
                 var m = String(d.getUTCMinutes()).padStart(2, "0");
                 return h + ":" + m;
             }
-            return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            var h = String(d.getHours()).padStart(2, "0");
+            var m = String(d.getMinutes()).padStart(2, "0");
+            return h + ":" + m;
         } catch (e) {
             return "";
         }
