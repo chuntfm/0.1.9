@@ -1074,7 +1074,7 @@ button.mini-btn {
         top: 0;
         border-top: none;
         border-bottom: 1px solid var(--border);
-        padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 1.25rem 0.75rem;
+        padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 1.25rem 0.75rem;
     }
 
     .mini-player.hidden {
