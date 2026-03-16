@@ -1021,10 +1021,8 @@ button.mini-btn {
     #links-cell {
         display: block;
         width: auto;
-    }
-
-    #links-cell {
         position: relative;
+        border-bottom: none;
     }
 
     #links-cell > .links-toggle-btn {
