@@ -367,8 +367,8 @@ body::before {
 }
 
 .links-toggle-btn {
-    display: block;
-    margin: 0 auto;
+    display: inline-flex;
+    align-items: center;
     background: none;
     border: none;
     font-family: var(--font-heading);
@@ -379,12 +379,18 @@ body::before {
     padding: 0.25rem 0;
 }
 
-#links-collapse {
-    font-size: 1rem;
+.links-toggle-icon {
+    width: 0.7em;
+    height: 0.7em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .links-toggle-btn:hover {
-    text-decoration: underline;
+    opacity: 0.6;
 }
 
 .nav-link-inline {
@@ -1007,6 +1013,13 @@ button.mini-btn {
     #links-cell {
         display: block;
         width: auto;
+    }
+
+    #links-collapsed {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
     }
 
     .nav-link {

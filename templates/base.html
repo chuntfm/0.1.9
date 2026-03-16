@@ -100,7 +100,7 @@
                 {% if default_page %}
                 <a href="/{{ default_page.slug ~ '/' if default_page.slug else '' }}" class="nav-link">{{ default_page.nav_name | upper }}</a>
                 {% endif %}
-                <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links">...</button>
+                <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links"><svg class="links-toggle-icon" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1 1l5 5 5-5"/></svg></button>
             </div>
             <nav id="links-expanded" aria-label="Site navigation">
                 {% for page in nav_pages %}
@@ -121,7 +121,7 @@
                 {% if random_quote %}
                 <span class="links-quote">{{ random_quote }}</span>
                 {% endif %}
-                <button id="links-collapse" class="links-toggle-btn js-only">x</button>
+                <button id="links-collapse" class="links-toggle-btn js-only" aria-label="Close menu"><svg class="links-toggle-icon" viewBox="0 0 12 8" aria-hidden="true"><path fill="currentColor" d="M1 7l5-5 5 5"/></svg></button>
             </nav>
             <script>
                 document.getElementById('links-collapsed').hidden = false;
