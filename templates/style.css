@@ -444,6 +444,7 @@ body::before {
 .transition-main {
     opacity: 1;
     transition: opacity 0.2s ease;
+    outline: none;
 }
 
 html.is-changing .transition-main {
