@@ -1,6 +1,15 @@
 (function () {
     "use strict";
 
+    // --- Theme color meta (matches iOS/Android status bar to bg) ---
+
+    function updateThemeColor(theme) {
+        var config = window.SITE_CONFIG;
+        var color = theme === "dark" ? config.theme.dark.bg : config.theme.light.bg;
+        var metas = document.querySelectorAll('meta[name="theme-color"]');
+        metas.forEach(function (m) { m.setAttribute("content", color); });
+    }
+
     // --- Links expand/collapse ---
 
     var linksToggle = document.getElementById("links-toggle");
@@ -76,6 +85,7 @@
                     var newTheme = isDark ? "light" : "dark";
                     document.documentElement.setAttribute("data-theme", newTheme);
                     localStorage.setItem("themeMode", newTheme);
+                    updateThemeColor(newTheme);
                     return;
                 }
             }
