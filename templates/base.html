@@ -90,7 +90,7 @@
         <a href="{{ config.links.special.chat.url }}" target="_blank" rel="noopener" class="cell cell-btn cell-narrow" id="chat-cell">
             <span class="cell-btn-label">{{ config.links.special.chat.name | upper }}</span>
         </a>
-        <div class="cell cell-narrow" id="links-cell">
+        <div class="cell cell-narrow{% if current_page == 'home' %} tz-visible{% endif %}" id="links-cell">
             {%- set nav_pages = config.pages | selectattr('nav_name', 'defined') | list -%}
             {%- set current_slug = '' if current_page == 'home' else current_page -%}
             {%- set current_nav = nav_pages | selectattr('slug', 'equalto', current_slug) | first -%}

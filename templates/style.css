@@ -1022,7 +1022,6 @@ button.mini-btn {
         display: block;
         width: auto;
         position: relative;
-        border-bottom: none;
     }
 
     #links-cell > .links-toggle-btn {
@@ -1054,7 +1053,12 @@ button.mini-btn {
     }
 
     #site-table .utility-cell {
+        border-top: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
+    }
+
+    #links-cell.tz-visible {
+        border-bottom: none;
     }
 
     #archive-search {
