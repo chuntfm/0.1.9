@@ -4,12 +4,24 @@
 import json
 import os
 import random
+import re
 import shutil
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
+
+try:
+    import rjsmin
+except ImportError:
+    rjsmin = None
+
+try:
+    import csscompressor
+except ImportError:
+    csscompressor = None
 
 
 ROOT = Path(__file__).parent
@@ -101,7 +113,38 @@ def temperature_to_bg(temp_c, base_hex):
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
+def minify_js(text):
+    """Minify JavaScript if rjsmin is available."""
+    if rjsmin:
+        return rjsmin.jsmin(text)
+    return text
+
+
+def minify_css(text):
+    """Minify CSS if csscompressor is available."""
+    if csscompressor:
+        return csscompressor.compress(text)
+    return text
+
+
+def generate_sitemap(config, pages):
+    """Generate a sitemap.xml from the pages list."""
+    site_url = config.get("site", {}).get("url", "").rstrip("/")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>']
+    lines.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    for page in pages:
+        slug = page["slug"]
+        loc = f"{site_url}/{slug + '/' if slug else ''}"
+        lines.append(f"  <url><loc>{loc}</loc><lastmod>{now}</lastmod></url>")
+    lines.append("</urlset>")
+    return "\n".join(lines)
+
+
 def build():
+    # Check if minification is enabled (any non-empty MINIFY env var)
+    do_minify = bool(os.environ.get("MINIFY", ""))
+
     # Read config
     with open(ROOT / "site.yaml") as f:
         config = yaml.safe_load(f)
@@ -201,7 +244,20 @@ def build():
         shutil.copytree(STATIC, DIST / "static")
 
     # Write rendered CSS (overwrites the copy from static)
+    if do_minify:
+        css = minify_css(css)
     (DIST / "static" / "css" / "style.css").write_text(css)
+
+    # Minify JS files
+    if do_minify:
+        js_dir = DIST / "static" / "js"
+        if js_dir.exists():
+            for js_file in js_dir.glob("*.js"):
+                js_file.write_text(minify_js(js_file.read_text()))
+
+    # Generate sitemap
+    sitemap = generate_sitemap(config, pages)
+    (DIST / "sitemap.xml").write_text(sitemap)
 
     # Copy favicon to root for browser default requests
     favicon = STATIC / "images" / "web" / "favicons" / "favicon.ico"
