@@ -1049,7 +1049,8 @@ button.mini-btn {
         overflow-y: visible;
     }
 
-    .cell-spacer {
+    .cell-spacer,
+    .cell-merge-left {
         display: none;
     }
 
