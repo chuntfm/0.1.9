@@ -247,6 +247,7 @@
     }
 
     function fetchUpnext() {
+        if (!upnextContent) return Promise.resolve();
         return fetch(apiBase + config.api.schedule_upnext)
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -257,6 +258,7 @@
     }
 
     function fetchPrevious() {
+        if (!previousContent) return;
         fetch(apiBase + config.api.schedule_previous)
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -280,7 +282,9 @@
         nowContent = document.getElementById("now-content");
         upnextContent = document.getElementById("upnext-content");
         previousContent = document.getElementById("previous-content");
-        reRenderAll();
+        if (nowContent || upnextContent || previousContent) {
+            fetchAll();
+        }
     };
 
     document.addEventListener("DOMContentLoaded", function () {
