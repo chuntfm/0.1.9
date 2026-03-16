@@ -35,7 +35,10 @@
                 window.__initArchive();
             }
 
-            // Update document title with day count
+            // Update counter and document title
+            if (typeof window.__initCounter === "function") {
+                window.__initCounter();
+            }
             if (typeof window.__updateDocTitle === "function") {
                 window.__updateDocTitle();
             }
@@ -80,10 +83,10 @@
         for (var i = 0; i < pages.length; i++) {
             if (pages[i].slug === currentSlug) { currentPage = pages[i]; break; }
         }
-        if (!currentPage || currentPage.nav_default === undefined) return;
+        var defaultSlug = currentPage && currentPage.nav_default !== undefined ? currentPage.nav_default : "";
         var defaultPage = null;
         for (var j = 0; j < pages.length; j++) {
-            if (pages[j].slug === currentPage.nav_default) { defaultPage = pages[j]; break; }
+            if (pages[j].slug === defaultSlug) { defaultPage = pages[j]; break; }
         }
         if (!defaultPage) return;
         var collapsedLink = document.querySelector("#links-collapsed .nav-link");
