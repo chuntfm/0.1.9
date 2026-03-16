@@ -12,7 +12,22 @@
     }
 
     // Set document title immediately
-    document.title = window.SITE_CONFIG.site.title + ": " + getDayCount() + " days of chunt";
+    function getBaseTitle() {
+        return window.SITE_CONFIG.site.title + ": " + getDayCount() + " days of chunt";
+    }
+
+    function updateDocTitle() {
+        var pageEl = document.getElementById("swup-content");
+        var page = pageEl ? pageEl.getAttribute("data-page") : "home";
+        if (page && page !== "home") {
+            document.title = page.charAt(0).toUpperCase() + page.slice(1) + " - " + getBaseTitle();
+        } else {
+            document.title = getBaseTitle();
+        }
+    }
+
+    window.__updateDocTitle = updateDocTitle;
+    updateDocTitle();
 
     function updateCounter(bpm) {
         var days = getDayCount();

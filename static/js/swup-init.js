@@ -35,6 +35,11 @@
                 window.__initArchive();
             }
 
+            // Update document title with day count
+            if (typeof window.__updateDocTitle === "function") {
+                window.__updateDocTitle();
+            }
+
             // Update tz-row visibility based on current page
             updateTzRowVisibility();
 
