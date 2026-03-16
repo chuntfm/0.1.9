@@ -513,7 +513,7 @@ html.is-changing .transition-main {
     text-decoration: underline;
 }
 
-/* === UTILITY ROW (full-width single cell, no borders) === */
+/* === UTILITY ROW (full-width single cell) === */
 .utility-row {
     border-bottom: none;
 }
@@ -961,7 +961,7 @@ button.mini-btn {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        border-bottom: 2px solid var(--border);
+        border-bottom: none;
     }
 
     #header-logo {
@@ -999,7 +999,7 @@ button.mini-btn {
 
     #player-row {
         display: block;
-        border-bottom: 2px solid var(--border);
+        border-bottom: none;
     }
 
     #player-section {
@@ -1052,6 +1052,10 @@ button.mini-btn {
     .cell-spacer,
     .cell-merge-left {
         display: none;
+    }
+
+    .utility-cell {
+        border-bottom: 1px solid var(--border);
     }
 
     #archive-search {
