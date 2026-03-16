@@ -380,13 +380,8 @@ body::before {
 }
 
 .links-toggle-icon {
-    width: 0.7em;
-    height: 0.7em;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 0.55em;
+    height: 0.55em;
 }
 
 .links-toggle-btn:hover {
@@ -1015,11 +1010,20 @@ button.mini-btn {
         width: auto;
     }
 
-    #links-collapsed {
+    #links-collapsed:not([hidden]) {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
+        position: relative;
+    }
+
+    #links-collapsed .nav-link {
+        flex: 1;
+        text-align: center;
+    }
+
+    #links-collapsed .links-toggle-btn {
+        position: absolute;
+        right: 0;
     }
 
     .nav-link {
