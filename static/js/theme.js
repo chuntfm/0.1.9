@@ -4,7 +4,6 @@
     // --- Links expand/collapse ---
 
     var linksToggle = document.getElementById("links-toggle");
-    var linksCollapse = document.getElementById("links-collapse");
     var linksCollapsed = document.getElementById("links-collapsed");
     var linksExpanded = document.getElementById("links-expanded");
 
@@ -12,16 +11,25 @@
         linksCollapsed.hidden = true;
         linksExpanded.hidden = false;
         linksToggle.setAttribute("aria-expanded", "true");
+        linksToggle.setAttribute("aria-label", "Close menu");
     }
 
     function collapseLinks() {
         linksExpanded.hidden = true;
         linksCollapsed.hidden = false;
         linksToggle.setAttribute("aria-expanded", "false");
+        linksToggle.setAttribute("aria-label", "More links");
     }
 
-    if (linksToggle) linksToggle.addEventListener("click", expandLinks);
-    if (linksCollapse) linksCollapse.addEventListener("click", collapseLinks);
+    function toggleLinks() {
+        if (linksExpanded.hidden) {
+            expandLinks();
+        } else {
+            collapseLinks();
+        }
+    }
+
+    if (linksToggle) linksToggle.addEventListener("click", toggleLinks);
 
     // Collapse drawer when an internal nav link is clicked
     if (linksExpanded) {

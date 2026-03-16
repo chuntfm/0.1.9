@@ -380,8 +380,20 @@ body::before {
 }
 
 .links-toggle-icon {
-    width: 0.55em;
-    height: 0.55em;
+    width: 1em;
+    height: 1em;
+}
+
+.links-toggle-up {
+    display: none;
+}
+
+.links-toggle-btn[aria-expanded="true"] .links-toggle-down {
+    display: none;
+}
+
+.links-toggle-btn[aria-expanded="true"] .links-toggle-up {
+    display: inline;
 }
 
 .links-toggle-btn:hover {
@@ -1010,20 +1022,21 @@ button.mini-btn {
         width: auto;
     }
 
-    #links-collapsed:not([hidden]) {
-        display: flex;
-        align-items: center;
+    #links-cell {
         position: relative;
     }
 
-    #links-collapsed .nav-link {
-        flex: 1;
-        text-align: center;
+    #links-cell > .links-toggle-btn {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
     }
 
-    #links-collapsed .links-toggle-btn {
-        position: absolute;
-        right: 0;
+    #links-cell > .links-toggle-btn[aria-expanded="true"] {
+        top: 0.75rem;
+        transform: none;
     }
 
     .nav-link {

@@ -100,8 +100,8 @@
                 {% if default_page %}
                 <a href="/{{ default_page.slug ~ '/' if default_page.slug else '' }}" class="nav-link">{{ default_page.nav_name | upper }}</a>
                 {% endif %}
-                <button id="links-toggle" class="links-toggle-btn" aria-expanded="false" aria-label="More links"><svg class="links-toggle-icon" viewBox="0 0 10 8" aria-hidden="true"><polygon fill="currentColor" points="0,0 10,0 5,8"/></svg></button>
             </div>
+            <button id="links-toggle" class="links-toggle-btn js-only" aria-expanded="false" aria-label="More links"><svg class="links-toggle-icon links-toggle-down" viewBox="0 0 10 7" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0.5,0.5 5,6 9.5,0.5"/></svg><svg class="links-toggle-icon links-toggle-up" viewBox="0 0 10 7" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0.5,6 5,0.5 9.5,6"/></svg></button>
             <nav id="links-expanded" aria-label="Site navigation">
                 {% for page in nav_pages %}
                 <a href="/{{ page.slug ~ '/' if page.slug else '' }}" class="nav-link">{{ page.nav_name | upper }}</a>
@@ -121,7 +121,6 @@
                 {% if random_quote %}
                 <span class="links-quote">{{ random_quote }}</span>
                 {% endif %}
-                <button id="links-collapse" class="links-toggle-btn js-only" aria-label="Close menu"><svg class="links-toggle-icon" viewBox="0 0 10 8" aria-hidden="true"><polygon fill="currentColor" points="0,8 10,8 5,0"/></svg></button>
             </nav>
             <script>
                 document.getElementById('links-collapsed').hidden = false;
