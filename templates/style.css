@@ -679,6 +679,16 @@ html.is-changing .transition-main {
     top: -0.1em;
 }
 
+.show-title-link {
+    color: var(--fg);
+    text-decoration: none;
+}
+
+.show-title-link:hover {
+    text-decoration: underline;
+    color: var(--highlight);
+}
+
 #previous-body {
     max-height: 200px;
     overflow-y: auto;
@@ -799,6 +809,20 @@ button.archive-tag {
 
 .archive-entry:last-child {
     margin-bottom: 0;
+}
+
+.archive-highlight {
+    background: var(--highlight);
+    color: var(--bg);
+    padding: 0.25rem 0.5rem;
+    margin: -0.25rem -0.5rem;
+    border-radius: 2px;
+}
+
+.archive-highlight .archive-title,
+.archive-highlight .archive-date {
+    color: var(--bg);
+    opacity: 1;
 }
 
 .archive-date {

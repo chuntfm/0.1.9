@@ -173,6 +173,12 @@
         }
     }
 
+    function getMixcloudSlug(url) {
+        if (!url) return "";
+        var parts = url.replace(/\/+$/, "").split("/");
+        return parts[parts.length - 1] || "";
+    }
+
     function formatDuration(seconds) {
         var h = Math.floor(seconds / 3600);
         var m = Math.floor((seconds % 3600) / 60);
@@ -214,6 +220,10 @@
             var entry = document.createElement("div");
             entry.className = "archive-entry";
 
+            // Set ID from Mixcloud URL slug for deep linking
+            var slug = getMixcloudSlug(show.url);
+            if (slug) entry.id = slug;
+
             var date = document.createElement("span");
             date.className = "archive-date";
             date.textContent = show.info ? show.info.date || "" : "";
@@ -247,6 +257,17 @@
     function render() {
         renderTags();
         renderShows();
+        scrollToHash();
+    }
+
+    function scrollToHash() {
+        var hash = window.location.hash;
+        if (!hash) return;
+        var el = document.getElementById(hash.slice(1));
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("archive-highlight");
+        }
     }
 
     function loadEmbeddedData() {
