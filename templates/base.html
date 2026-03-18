@@ -47,7 +47,7 @@
 
     </style>
     <script>
-        (function(){var t=localStorage.getItem('themeMode');if(t)document.documentElement.setAttribute('data-theme',t);})();
+        (function(){var t=localStorage.getItem('themeMode');if(t){var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';if(t===sys){localStorage.removeItem('themeMode')}else{document.documentElement.setAttribute('data-theme',t)}}})();
         document.documentElement.classList.add('js');
         if('scrollRestoration' in history)history.scrollRestoration='manual';
     </script>

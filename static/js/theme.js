@@ -10,6 +10,16 @@
         metas.forEach(function (m) { m.setAttribute("content", color); });
     }
 
+    // --- Follow system theme changes (clear manual override) ---
+
+    if (window.matchMedia) {
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+            localStorage.removeItem("themeMode");
+            document.documentElement.removeAttribute("data-theme");
+            updateThemeColor(this.matches ? "dark" : "light");
+        });
+    }
+
     // --- Links expand/collapse ---
 
     var linksToggle = document.getElementById("links-toggle");
