@@ -35,6 +35,10 @@ a, button, audio, .cell-btn, .links-toggle-btn, .mini-btn {
     cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
 }
 
+a:visited {
+    color: inherit;
+}
+
 /* Photocopy noise overlay */
 body::before {
     content: "";
