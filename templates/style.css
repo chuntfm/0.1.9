@@ -14,6 +14,7 @@ html {
 
 body {
     font-family: var(--font-body);
+    font-size: 0.9rem;
     color: var(--fg);
     background-color: var(--bg);
     line-height: 1.5;
@@ -637,16 +638,17 @@ html.is-changing .transition-main {
 }
 
 .show-time {
+    font-family: 'Courier Prime', 'Courier New', monospace;
     font-size: 0.8rem;
     opacity: 0.6;
 }
 
 .show-title {
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .show-description {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     opacity: 0.6;
     margin-top: 0.15rem;
 }
@@ -762,7 +764,7 @@ button.archive-tag {
 .archive-tag.active {
     opacity: 1;
     color: var(--highlight);
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .archive-tag-count {
@@ -780,7 +782,7 @@ button.archive-tag {
 
 .archive-tag-more {
     color: var(--highlight);
-    font-weight: 700;
+    font-weight: 600;
     opacity: 1;
     margin-top: 0.25rem;
 }
@@ -835,7 +837,7 @@ button.archive-tag {
 }
 
 .archive-title {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--fg);
     text-decoration: none;
 }
@@ -853,7 +855,10 @@ button.archive-tag {
 
 .archive-genres {
     display: block;
-    font-size: 0.8rem;
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     opacity: 0.5;
 }
 
@@ -925,7 +930,7 @@ button.mini-btn {
 
 #mini-now-playing {
     font-size: 0.9rem;
-    font-weight: 700;
+    font-weight: 600;
     margin-left: auto;
     overflow: hidden;
     text-overflow: ellipsis;
