@@ -467,25 +467,33 @@
         }
     }
 
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
     if ("IntersectionObserver" in window && playerSection && miniPlayer) {
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 playerVisible = entry.isIntersecting;
-                updateMiniPlayer();
+                if (playerVisible) {
+                    updateMiniPlayer();
+                } else if (!isMobile()) {
+                    // Desktop: always show when player is out of view
+                    miniPlayer.classList.remove("hidden");
+                    miniShown = true;
+                }
             });
         }, { threshold: 0 });
 
         observer.observe(playerSection);
 
         window.addEventListener("scroll", function () {
-            if (playerVisible) return;
+            if (playerVisible || !isMobile()) return;
             var currentY = window.scrollY;
             if (currentY < lastScrollY && !miniShown) {
-                // Scrolling up — show
                 miniPlayer.classList.remove("hidden");
                 miniShown = true;
             } else if (currentY > lastScrollY && miniShown) {
-                // Scrolling down — hide
                 miniPlayer.classList.add("hidden");
                 miniShown = false;
             }

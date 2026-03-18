@@ -813,18 +813,10 @@ button.archive-tag {
     margin-bottom: 0;
 }
 
-.archive-highlight {
-    background: var(--highlight);
-    color: var(--bg);
-    padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
-    border-radius: 2px;
-}
-
-.archive-highlight .archive-title,
-.archive-highlight .archive-date {
-    color: var(--bg);
-    opacity: 1;
+.archive-highlight .archive-title {
+    text-decoration: underline;
+    text-decoration-color: var(--highlight);
+    text-underline-offset: 0.15em;
 }
 
 .archive-date {
