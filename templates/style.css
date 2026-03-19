@@ -695,6 +695,11 @@ html.is-changing .transition-main {
     color: var(--highlight);
 }
 
+.restream-aired {
+    font-size: 0.75rem;
+    opacity: 0.4;
+}
+
 #previous-body {
     max-height: 200px;
     overflow-y: auto;
