@@ -651,6 +651,10 @@ html.is-changing .transition-main {
     font-weight: 600;
 }
 
+.show-not-live {
+    opacity: 0.35;
+}
+
 .show-description {
     font-size: 0.85rem;
     opacity: 0.6;

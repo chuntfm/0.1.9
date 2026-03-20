@@ -138,6 +138,7 @@
     function renderShow(show) {
         var div = document.createElement("div");
         div.className = "show-entry";
+        if (show.not_live) div.classList.add("show-not-live");
 
         if (show.restream) {
             var restreamEl = document.createElement("div");
@@ -259,7 +260,7 @@
                 // Update mini-player titles (rotate if multiple)
                 if (window.setMiniTitles) {
                     var titles = cachedNow
-                        .filter(function (s) { return s.title; })
+                        .filter(function (s) { return s.title && !s.not_live; })
                         .map(function (s) { return s.title; });
                     window.setMiniTitles(titles);
                 }
