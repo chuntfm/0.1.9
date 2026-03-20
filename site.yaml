@@ -42,6 +42,10 @@ links:
       url: "https://twitter.com/chuntfm"
     - name: "Ch3"
       url: "https://radioactivity.directory/ch3"
+    - name: "Bandcamp Explorer"
+      url: "https://bc-explorer.app/"
+    - name: "Artwork Generator"
+      url: "https://tag.chunt.org/artwork-generator"
   email: "spam@protect.org"
   quotes:
     - "If you're listening, tune in"
