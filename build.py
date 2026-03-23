@@ -237,7 +237,7 @@ def build():
     (DIST / "404.html").write_text(page_404)
 
     # Render CSS
-    css = env.get_template("style.css").render(assets=assets)
+    css = env.get_template("style.css").render(assets=assets, local=local)
 
     # Copy static assets
     if STATIC.exists():
