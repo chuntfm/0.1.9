@@ -104,10 +104,11 @@
         tzRow.style.display = isHome ? "" : "none";
     }
 
-    // Load swup CDN scripts then initialize
-    loadScript("https://unpkg.com/swup@4")
+    // Load swup scripts then initialize
+    var basePath = (window.SITE_CONFIG.site.base_path || "") + "/static/js";
+    loadScript(basePath + "/swup.min.js")
         .then(function () {
-            return loadScript("https://unpkg.com/@swup/head-plugin@2");
+            return loadScript(basePath + "/swup-head-plugin.min.js");
         })
         .then(initSwup)
         .catch(function () {

@@ -73,7 +73,7 @@ theme:
     body: "'JetBrains Mono', 'Courier New', monospace"
     heading: "'Helvetica Neue', Arial, sans-serif"
     logo: ""
-    webfont_url: "https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    webfont_url: ""
   light:
     bg: "#fdfdfd"
     fg: "#1a1a1a"
