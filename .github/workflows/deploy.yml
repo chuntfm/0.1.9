@@ -63,4 +63,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .last-build
-          git diff --cached --quiet || git commit -m "Update .last-build timestamp" && git push
+          git diff --cached --quiet || git commit -m "Update .last-build timestamp [skip ci]" && git push
