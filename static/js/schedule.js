@@ -251,9 +251,14 @@
 
     var miniNowPlaying = document.getElementById("mini-now-playing");
 
+    function okJson(r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+    }
+
     function fetchNow() {
         return fetch(apiBase + config.api.now_playing)
-            .then(function (r) { return r.json(); })
+            .then(okJson)
             .then(function (data) {
                 cachedNow = normalizeResponse(data);
                 renderShows(nowContent, cachedNow, "no live show");
@@ -271,7 +276,7 @@
     function fetchUpnext() {
         if (!upnextContent) return Promise.resolve();
         return fetch(apiBase + config.api.schedule_upnext)
-            .then(function (r) { return r.json(); })
+            .then(okJson)
             .then(function (data) {
                 cachedUpnext = normalizeResponse(data);
                 renderShows(upnextContent, cachedUpnext, "I'm coming up");
@@ -282,7 +287,7 @@
     function fetchPrevious() {
         if (!previousContent) return;
         fetch(apiBase + config.api.schedule_previous)
-            .then(function (r) { return r.json(); })
+            .then(okJson)
             .then(function (data) {
                 cachedPrevious = normalizeResponse(data).reverse();
                 renderShows(previousContent, cachedPrevious, "no previous shows");
