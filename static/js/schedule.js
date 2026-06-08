@@ -85,7 +85,7 @@
 
     function reRenderAll() {
         renderShows(nowContent, cachedNow, "no live show");
-        renderShows(upnextContent, cachedUpnext, "nothing coming up");
+        renderShows(upnextContent, cachedUpnext, "I'm coming up");
         renderShows(previousContent, cachedPrevious, "no previous shows");
     }
 
@@ -274,7 +274,7 @@
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 cachedUpnext = normalizeResponse(data);
-                renderShows(upnextContent, cachedUpnext, "nothing coming up");
+                renderShows(upnextContent, cachedUpnext, "I'm coming up");
             })
             .catch(function () {});
     }
