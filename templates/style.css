@@ -705,6 +705,13 @@ html.is-changing .transition-main {
     margin-top: 0.15rem;
 }
 
+.show-img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-top: 0.25rem;
+}
+
 .restream-label {
     font-size: 0.75rem;
     letter-spacing: 0.08em;

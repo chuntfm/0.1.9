@@ -135,6 +135,74 @@
         return { keys: groups, map: groupMap };
     }
 
+    // Renders API-provided text that may contain HTML. Whitelist approach:
+    // a (http/https href only), b, i, em, strong, u, br, img (http/https src
+    // only); p is converted to a line break. Unknown tags are dropped but
+    // their text content is kept; script/style are dropped entirely. Never
+    // uses innerHTML on the live page, so nothing outside the whitelist can
+    // reach the DOM.
+    function appendSanitizedHtml(el, text) {
+        var doc;
+        try {
+            doc = new DOMParser().parseFromString(text, "text/html");
+        } catch (e) {
+            el.appendChild(document.createTextNode(text));
+            return;
+        }
+        copySanitized(el, doc.body);
+    }
+
+    function copySanitized(target, node) {
+        var children = node.childNodes;
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child.nodeType === 3) {
+                target.appendChild(document.createTextNode(child.nodeValue));
+            } else if (child.nodeType === 1) {
+                var tag = child.tagName;
+                if (tag === "BR") {
+                    target.appendChild(document.createElement("br"));
+                } else if (tag === "A") {
+                    var href = child.getAttribute("href") || "";
+                    if (/^https?:\/\//i.test(href)) {
+                        var a = document.createElement("a");
+                        a.href = href;
+                        a.target = "_blank";
+                        a.rel = "noopener";
+                        copySanitized(a, child);
+                        if (!a.textContent) a.textContent = href;
+                        target.appendChild(a);
+                    } else {
+                        copySanitized(target, child);
+                    }
+                } else if (tag === "IMG") {
+                    var src = child.getAttribute("src") || "";
+                    if (/^https?:\/\//i.test(src)) {
+                        var img = document.createElement("img");
+                        img.src = src;
+                        img.alt = child.getAttribute("alt") || "";
+                        img.loading = "lazy";
+                        img.className = "show-img";
+                        target.appendChild(img);
+                    }
+                } else if (tag === "B" || tag === "I" || tag === "EM" || tag === "STRONG" || tag === "U") {
+                    var inline = document.createElement(tag.toLowerCase());
+                    copySanitized(inline, child);
+                    target.appendChild(inline);
+                } else if (tag === "P") {
+                    copySanitized(target, child);
+                    target.appendChild(document.createElement("br"));
+                } else if (tag !== "SCRIPT" && tag !== "STYLE") {
+                    copySanitized(target, child);
+                }
+            }
+        }
+    }
+
+    function stripTags(text) {
+        return text.replace(/<[^>]*>/g, "");
+    }
+
     function renderShow(show) {
         var div = document.createElement("div");
         div.className = "show-entry";
@@ -194,14 +262,14 @@
                 titleEl.appendChild(airedEl);
             }
         } else {
-            titleEl.textContent = title;
+            appendSanitizedHtml(titleEl, title);
         }
         div.appendChild(titleEl);
 
         if (show.description) {
             var descEl = document.createElement("div");
             descEl.className = "show-description";
-            descEl.textContent = show.description;
+            appendSanitizedHtml(descEl, show.description);
             div.appendChild(descEl);
         }
 
@@ -266,7 +334,7 @@
                 if (window.setMiniTitles) {
                     var titles = cachedNow
                         .filter(function (s) { return s.title && !s.not_live; })
-                        .map(function (s) { return s.title; });
+                        .map(function (s) { return stripTags(s.title); });
                     window.setMiniTitles(titles);
                 }
             })
