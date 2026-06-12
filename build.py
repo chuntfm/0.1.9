@@ -94,10 +94,10 @@ def fetch_skegness_temperature(url):
 
 
 def temperature_to_bg(temp_c, base_hex):
-    """Map temperature to a light-mode background with a subtle pink tint.
+    """Map temperature to a light-mode background in shades of light grey.
 
     0C or below: base color unchanged.
-    35C or above: max subtle warm pink shift (R+2, G-10, B-12).
+    35C or above: max grey shift (all channels -20).
     Linear interpolation in between.
     """
     base_hex = base_hex.lstrip("#")
@@ -107,9 +107,10 @@ def temperature_to_bg(temp_c, base_hex):
         return f"#{base_r:02x}{base_g:02x}{base_b:02x}"
 
     t = min(temp_c / 35.0, 1.0)
-    r = min(round(base_r + 2 * t), 255)
-    g = max(round(base_g - 10 * t), 0)
-    b = max(round(base_b - 12 * t), 0)
+    shift = round(20 * t)
+    r = max(base_r - shift, 0)
+    g = max(base_g - shift, 0)
+    b = max(base_b - shift, 0)
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
