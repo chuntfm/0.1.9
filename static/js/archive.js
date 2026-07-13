@@ -18,11 +18,15 @@
                     var dateB = (b.info && b.info.date) || "";
                     return dateB.localeCompare(dateA);
                 });
+                // Skip re-render if fetched data matches what is already shown
+                if (cachedShows && JSON.stringify(data) === JSON.stringify(cachedShows)) return;
                 cachedShows = data;
                 cachedTags = extractTags(data);
                 render();
             })
             .catch(function () {
+                // Keep already-rendered data on fetch failure
+                if (cachedShows) return;
                 var content = document.getElementById("archive-content");
                 if (content) {
                     content.innerHTML = "";
@@ -292,13 +296,11 @@
             searchEl.oninput = function () { render(); };
         }
 
-        if (cachedShows) {
+        // Render embedded build-time data immediately, then fetch fresh data on top
+        if (cachedShows || loadEmbeddedData()) {
             render();
-        } else if (loadEmbeddedData()) {
-            render();
-        } else {
-            fetchArchive();
         }
+        fetchArchive();
     }
 
     window.__initArchive = function () {
