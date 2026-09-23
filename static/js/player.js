@@ -2,7 +2,30 @@
     "use strict";
 
     var config = window.SITE_CONFIG;
-    var streamUrl = config.streams.default;
+    // Stream URLs, keyed by channel. Start with the configured API redirect
+    // URLs and replace them with the direct stream URLs once the API answers,
+    // so play() connects to the stream without a redirect.
+    var streams = { default: config.streams.default, jukebox: config.streams.jukebox };
+    var currentStream = "default";
+    var channelIds = { default: 1, jukebox: 2 };
+
+    function resolveStreamUrls() {
+        if (!config.api || !config.api.base || typeof fetch !== "function") return;
+        Object.keys(channelIds).forEach(function (key) {
+            if (!streams[key]) return;
+            fetch(config.api.base + "/fm/channels/" + channelIds[key])
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (ch) {
+                    if (!ch || !Array.isArray(ch.streams)) return;
+                    var chosen = ch.streams.filter(function (st) { return st.default; })[0] || ch.streams[0];
+                    if (chosen && typeof chosen.url === "string" && /^https?:\/\//.test(chosen.url)) {
+                        streams[key] = chosen.url;
+                    }
+                })
+                .catch(function () {});
+        });
+    }
+    resolveStreamUrls();
 
     var audio = document.getElementById("audio-player");
     var playerCell = document.getElementById("player-section");
@@ -117,7 +140,7 @@
     // --- Playback ---
 
     function timestampedUrl() {
-        return streamUrl + "?t=" + Date.now();
+        return streams[currentStream] + "?t=" + Date.now();
     }
 
     function play() {
@@ -169,11 +192,11 @@
         if (wasPlaying) stop();
 
         if (channel === 2 && config.streams.jukebox) {
-            streamUrl = config.streams.jukebox;
+            currentStream = "jukebox";
             siteTitle.classList.add("jukebox");
             jukeboxLabel.classList.add("active");
         } else {
-            streamUrl = config.streams.default;
+            currentStream = "default";
             siteTitle.classList.remove("jukebox");
             jukeboxLabel.classList.remove("active");
         }
