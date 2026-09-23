@@ -58,6 +58,11 @@ links:
 counter:
   start_date: "2022-03-14"
 
+shutters:
+  enabled: true
+  minute: 11
+  duration: 12
+
 polling:
   now_playing: 30
   schedule_upnext: 60

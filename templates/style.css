@@ -95,6 +95,25 @@ body::before {
     background-size: 256px 256px;
 }
 
+/* Panorama Bar shutters: sunlight layer behind the content, toggled by html.shutters-open */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 120% 90% at 50% 0%, #fffdf3 0%, #fff3c4 45%, #ffd978 100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 2s ease, visibility 0s linear 2s;
+}
+
+html.shutters-open body::after {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease;
+}
+
 /* === SKIP LINK === */
 .skip-link {
     position: absolute;
