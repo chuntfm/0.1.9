@@ -114,6 +114,37 @@ html.shutters-open body::after {
     transition: opacity 2s ease;
 }
 
+/* Boat night: html.boat rocks the deck and the mini player around the viewport centre.
+   boat.js sets --boat-tilt / --boat-heave on <html> and the deck's transform-origin. */
+@keyframes boat-roll {
+    0%, 100% { rotate: calc(-1 * var(--boat-tilt, 0deg)); }
+    50% { rotate: var(--boat-tilt, 0deg); }
+}
+
+@keyframes boat-heave {
+    0%, 100% { translate: 0 calc(-1 * var(--boat-heave, 0px)); }
+    50% { translate: 0 var(--boat-heave, 0px); }
+}
+
+html.boat {
+    overflow-x: hidden;
+}
+
+html.boat #deck,
+html.boat .mini-player {
+    animation: boat-roll 7s ease-in-out infinite, boat-heave 4.6s ease-in-out infinite;
+}
+
+html.boat .mini-player {
+    transform-origin: 50% calc(100% - 50vh);
+}
+
+/* A hidden mini player sits just off the bottom edge; tilted, a corner would peek back in */
+html.boat .mini-player.hidden {
+    visibility: hidden;
+    transition: transform 0.3s ease, background-color 0.3s, visibility 0s linear 0.3s;
+}
+
 /* === SKIP LINK === */
 .skip-link {
     position: absolute;
@@ -1189,5 +1220,9 @@ button.mini-btn {
 
     .mini-player.hidden {
         transform: translateY(-100%);
+    }
+
+    html.boat .mini-player {
+        transform-origin: 50% 50vh;
     }
 }

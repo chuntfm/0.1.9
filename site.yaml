@@ -63,6 +63,11 @@ shutters:
   minute: 11
   duration: 12
 
+boat:
+  start: "2026-10-24T22:00:00Z"
+  end: "2026-10-25T06:00:00Z"
+  tilt: 3
+
 polling:
   now_playing: 30
   schedule_upnext: 60

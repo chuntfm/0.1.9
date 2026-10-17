@@ -55,6 +55,8 @@
 
 <a href="#swup-content" class="skip-link">Skip to content</a>
 
+<!-- DECK: everything that rocks on boat night (boat.js) -->
+<div id="deck">
 <header>
 <div id="site-table">
 
@@ -150,6 +152,7 @@
 <footer id="site-footer">
     <span class="footer-text">{{ config.site.footer_text }}</span>
 </footer>
+</div>
 
 <!-- MINI PLAYER (fixed bottom bar) -->
 <div id="mini-player" class="mini-player hidden">
@@ -167,6 +170,7 @@
 <script src="{{ local }}/js/archive.js"></script>
 <script src="{{ local }}/js/theme.js"></script>
 <script src="{{ local }}/js/shutters.js"></script>
+<script src="{{ local }}/js/boat.js"></script>
 <script src="{{ local }}/js/swup-init.js"></script>
 {% if config.analytics.goatcounter.enabled %}
 <script data-goatcounter="{{ config.analytics.goatcounter.url or ('https://' ~ config.analytics.goatcounter.id ~ '.goatcounter.com/count') }}"
