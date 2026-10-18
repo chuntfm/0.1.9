@@ -171,6 +171,19 @@ html.boat .mini-player.hidden {
     to { translate: 25vw 0; }
 }
 
+/* The colour sweeps slowly through the warm range, rose to amber to gold, six times,
+   then takes one slow trip around the whole spectrum back to where it started */
+@keyframes boat-glow-hue {
+    0% { filter: hue-rotate(-25deg); }
+    12.5% { filter: hue-rotate(25deg); }
+    25% { filter: hue-rotate(-25deg); }
+    37.5% { filter: hue-rotate(25deg); }
+    50% { filter: hue-rotate(-25deg); }
+    62.5% { filter: hue-rotate(25deg); }
+    75% { filter: hue-rotate(-25deg); }
+    100% { filter: hue-rotate(335deg); }
+}
+
 html.boat-glow::before {
     content: "";
     position: fixed;
@@ -181,7 +194,10 @@ html.boat-glow::before {
     z-index: -1;
     pointer-events: none;
     background: radial-gradient(ellipse 60% 80% at 50% 100%, var(--boat-glow-color) 0%, transparent 70%);
-    animation: boat-glow-breathe 24s ease-in-out infinite, boat-glow-drift 300s ease-in-out infinite alternate;
+    animation:
+        boat-glow-breathe 24s ease-in-out infinite,
+        boat-glow-drift 300s ease-in-out infinite alternate,
+        boat-glow-hue 1200s ease-in-out infinite;
 }
 
 /* === SKIP LINK === */
