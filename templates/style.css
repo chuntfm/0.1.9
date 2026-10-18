@@ -165,14 +165,23 @@ html.boat .mini-player.hidden {
     50% { opacity: var(--boat-glow, 0); }
 }
 
+/* The layer is twice the viewport width and slides, so the glow's centre wanders along the bottom edge */
+@keyframes boat-glow-drift {
+    from { translate: -25vw 0; }
+    to { translate: 25vw 0; }
+}
+
 html.boat-glow::before {
     content: "";
     position: fixed;
-    inset: 0;
+    top: 0;
+    bottom: 0;
+    left: -50vw;
+    right: -50vw;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse 120% 80% at 50% 100%, var(--boat-glow-color) 0%, transparent 70%);
-    animation: boat-glow-breathe 24s ease-in-out infinite;
+    background: radial-gradient(ellipse 60% 80% at 50% 100%, var(--boat-glow-color) 0%, transparent 70%);
+    animation: boat-glow-breathe 24s ease-in-out infinite, boat-glow-drift 300s ease-in-out infinite alternate;
 }
 
 /* === SKIP LINK === */
