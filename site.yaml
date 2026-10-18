@@ -64,9 +64,22 @@ shutters:
   duration: 12
 
 boat:
-  start: "2026-10-24T22:00:00Z"
-  end: "2026-10-25T06:00:00Z"
-  tilt: 3
+  sway:
+    - at: "2026-10-24T14:00:00Z"
+      deg: 0
+    - at: "2026-10-24T22:00:00Z"
+      deg: 0.3
+    - at: "2026-10-25T06:00:00Z"
+      deg: 3
+    - at: "2026-10-25T10:00:00Z"
+      deg: 0
+  glow:
+    - at: "2026-10-25T06:00:00Z"
+      level: 0
+    - at: "2026-10-25T07:00:00Z"
+      level: 1
+    - at: "2026-10-25T10:00:00Z"
+      level: 0
 
 polling:
   now_playing: 30

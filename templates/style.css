@@ -145,6 +145,36 @@ html.boat .mini-player.hidden {
     transition: transform 0.3s ease, background-color 0.3s, visibility 0s linear 0.3s;
 }
 
+/* Afterglow: a warm glow behind the page, strength from --boat-glow (0 to 1), breathing slowly */
+:root {
+    --boat-glow-color: rgba(255, 150, 60, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --boat-glow-color: rgba(255, 100, 20, 0.4);
+    }
+}
+
+:root[data-theme="dark"] {
+    --boat-glow-color: rgba(255, 100, 20, 0.4);
+}
+
+@keyframes boat-glow-breathe {
+    0%, 100% { opacity: calc(var(--boat-glow, 0) * 0.7); }
+    50% { opacity: var(--boat-glow, 0); }
+}
+
+html.boat-glow::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 120% 80% at 50% 100%, var(--boat-glow-color) 0%, transparent 70%);
+    animation: boat-glow-breathe 24s ease-in-out infinite;
+}
+
 /* === SKIP LINK === */
 .skip-link {
     position: absolute;
