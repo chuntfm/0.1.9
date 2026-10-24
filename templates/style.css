@@ -114,25 +114,21 @@ html.shutters-open body::after {
     transition: opacity 2s ease;
 }
 
-/* Boat night: html.boat rocks the deck and the mini player around the viewport centre.
-   boat.js sets --boat-tilt / --boat-heave on <html> and the deck's transform-origin. */
-@keyframes boat-roll {
-    0%, 100% { rotate: calc(-1 * var(--boat-tilt, 0deg)); }
-    50% { rotate: var(--boat-tilt, 0deg); }
-}
-
-@keyframes boat-heave {
-    0%, 100% { translate: 0 calc(-1 * var(--boat-heave, 0px)); }
-    50% { translate: 0 var(--boat-heave, 0px); }
-}
-
+/* Boat night: html.boat while the page rolls. boat.js writes transform and transform-origin
+   on #deck and rotate/translate on the mini player every animation frame. No keyframe
+   animation here: on #deck, as tall as the document, it got the page killed on iOS. */
 html.boat {
+    /* Also keeps body's overflow below from propagating to the viewport */
     overflow-x: hidden;
 }
 
-html.boat #deck,
-html.boat .mini-player {
-    animation: boat-roll 7s ease-in-out infinite, boat-heave 4.6s ease-in-out infinite;
+/* The tilted deck's corners must not change the scrollable size from frame to frame */
+html.boat body {
+    overflow: clip;
+}
+
+html.boat #deck {
+    will-change: transform;
 }
 
 html.boat .mini-player {
