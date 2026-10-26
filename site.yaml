@@ -93,9 +93,9 @@ logo:
   force: ""
   overrides:
     - name: "pirate"
-      src: "images/web/logos/chuntfm_pirate.svg"
-      from: "2026-11-02T00:00:00Z"
-      until: "2026-11-09T00:00:00Z"
+      src: "images/web/logos/chuntfm_eye_bones.svg"
+      from: "2026-10-26T00:00:00Z"
+      until: "2026-11-02T00:00:00Z"
       invert_dark: true
 
 polling:
