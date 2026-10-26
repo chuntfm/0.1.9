@@ -83,6 +83,21 @@ boat:
     - at: "2026-10-26T00:00:00Z"
       level: 0
 
+logo:
+  default: "images/web/logos/chuntfm_eye.svg"
+  # Scheduled logo swaps. Active when from <= build time < until (UTC).
+  # Resolved at build time: deploy runs on push and daily at 00:05 UTC,
+  # so date-boundary windows switch within minutes; otherwise trigger
+  # the workflow manually. force: "<name>" (or SITE__LOGO__FORCE=<name>)
+  # selects an override regardless of time; empty = follow the schedule.
+  force: ""
+  overrides:
+    - name: "pirate"
+      src: "images/web/logos/chuntfm_pirate.svg"
+      from: "2026-11-02T00:00:00Z"
+      until: "2026-11-09T00:00:00Z"
+      invert_dark: true
+
 polling:
   now_playing: 30
   schedule_upnext: 60

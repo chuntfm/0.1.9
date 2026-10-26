@@ -114,6 +114,69 @@ def temperature_to_bg(temp_c, base_hex):
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
+def resolve_logo(config, now=None):
+    """Pick the header logo for this build.
+
+    config["logo"] holds a default and a list of scheduled overrides:
+
+        logo:
+          default: "images/web/logos/chuntfm_eye.svg"
+          overrides:
+            - name: "pirate"
+              src: "images/web/logos/chuntfm_pirate.svg"
+              from: "2026-11-02T00:00:00Z"
+              until: "2026-11-09T00:00:00Z"
+              invert_dark: true   # optional, default true
+
+    An override is active when from <= now < until (both ISO 8601, UTC).
+    The first active override wins; config["logo"]["force"] (env:
+    SITE__LOGO__FORCE) selects an override by name regardless of time.
+    Returns {"name", "src", "invert_dark"}; src is still relative to the
+    assets base unless it is an absolute URL or starts with "/".
+    """
+    cfg = config.get("logo") or {}
+    now = _parse_utc(now) if now else datetime.now(timezone.utc)
+    chosen = {"name": "default", "src": cfg.get("default", "images/web/logos/chuntfm_eye.svg"), "invert_dark": True}
+    force = cfg.get("force") or ""
+
+    for ov in cfg.get("overrides") or []:
+        if force:
+            if ov.get("name") == force:
+                chosen = {"name": ov["name"], "src": ov["src"], "invert_dark": ov.get("invert_dark", True)}
+                break
+            continue
+        start = _parse_utc(ov["from"])
+        end = _parse_utc(ov["until"])
+        if end <= start:
+            raise ValueError(f"logo override {ov.get('name')!r}: until must be after from")
+        if start <= now < end:
+            chosen = {"name": ov.get("name", ov["src"]), "src": ov["src"], "invert_dark": ov.get("invert_dark", True)}
+            break
+    else:
+        if force:
+            raise ValueError(f"logo.force={force!r} matches no override")
+
+    return chosen
+
+
+def _parse_utc(value):
+    """Parse an ISO 8601 timestamp; naive values are taken as UTC."""
+    if isinstance(value, datetime):
+        dt = value
+    else:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def logo_url(src, assets):
+    """Absolute URLs and root-relative paths pass through; else prefix assets."""
+    if src.startswith(("http://", "https://", "/")):
+        return src
+    return f"{assets}/{src}"
+
+
 def minify_js(text):
     """Minify JavaScript if rjsmin is available."""
     if rjsmin:
@@ -172,6 +235,12 @@ def build():
     local = f"{base_path}/static"
     assets = assets_url if assets_url else local
 
+    # Header logo: scheduled overrides resolved at build time
+    build_now = os.environ.get("BUILD_NOW")
+    logo = resolve_logo(config, _parse_utc(build_now) if build_now else None)
+    logo["src"] = logo_url(logo["src"], assets)
+    print(f"Logo: {logo['name']} ({logo['src']})")
+
     # Build client config (exclude sensitive data like email)
     client_config = json.loads(json.dumps(config))
     if "links" in client_config and "email" in client_config["links"]:
@@ -216,6 +285,7 @@ def build():
             config_json=config_json,
             current_page=current_page,
             random_quote=random_quote,
+            logo=logo,
             **extra,
         )
 
@@ -234,6 +304,7 @@ def build():
         config_json=config_json,
         current_page="404",
         random_quote=random_quote,
+        logo=logo,
     )
     (DIST / "404.html").write_text(page_404)
 
