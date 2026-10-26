@@ -293,12 +293,12 @@ html.boat-glow::before {
     height: auto;
 }
 
-:root[data-theme="dark"] #logo {
+:root[data-theme="dark"] #logo:not(.no-invert) {
     filter: invert(1);
 }
 
 @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) #logo {
+    :root:not([data-theme="light"]) #logo:not(.no-invert) {
         filter: invert(1);
     }
 }

@@ -63,7 +63,7 @@
     <!-- HEADER ROW -->
     <div class="row" id="header-row">
         <a href="/" class="cell cell-narrow" id="header-logo">
-            <img id="logo" src="{{ assets }}/images/web/logos/chuntfm_eye.svg" alt="ChuntFM logo">
+            <img id="logo" src="{{ logo.src }}" alt="ChuntFM logo" data-logo="{{ logo.name }}"{% if not logo.invert_dark %} class="no-invert"{% endif %}>
         </a>
         <div class="cell" id="header-title">
             <h1><span id="site-title">{{ config.site.title }}</span><span id="jukebox-label">JUKEBOX</span></h1>
