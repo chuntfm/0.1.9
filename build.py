@@ -131,8 +131,7 @@ def resolve_logo(config, now=None):
     An override is active when from <= now < until (both ISO 8601, UTC).
     The first active override wins; config["logo"]["force"] (env:
     SITE__LOGO__FORCE) selects an override by name regardless of time.
-    Returns {"name", "src", "invert_dark"}; src is still relative to the
-    assets base unless it is an absolute URL or starts with "/".
+    Returns {"name", "src", "invert_dark"}; src is resolved by logo_url().
     """
     cfg = config.get("logo") or {}
     now = _parse_utc(now) if now else datetime.now(timezone.utc)
@@ -170,10 +169,14 @@ def _parse_utc(value):
     return dt.astimezone(timezone.utc)
 
 
-def logo_url(src, assets):
-    """Absolute URLs and root-relative paths pass through; else prefix assets."""
+def logo_url(src, assets, local):
+    """Resolve a logo src: absolute URLs and root-relative paths pass through,
+    "static/..." is served from this site's own static dir, anything else is
+    relative to the assets base."""
     if src.startswith(("http://", "https://", "/")):
         return src
+    if src.startswith("static/"):
+        return f"{local}/{src[len('static/'):]}"
     return f"{assets}/{src}"
 
 
@@ -238,7 +241,7 @@ def build():
     # Header logo: scheduled overrides resolved at build time
     build_now = os.environ.get("BUILD_NOW")
     logo = resolve_logo(config, _parse_utc(build_now) if build_now else None)
-    logo["src"] = logo_url(logo["src"], assets)
+    logo["src"] = logo_url(logo["src"], assets, local)
     print(f"Logo: {logo['name']} ({logo['src']})")
 
     # Build client config (exclude sensitive data like email)
