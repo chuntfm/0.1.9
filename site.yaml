@@ -92,9 +92,8 @@ logo:
   # selects an override regardless of time; empty = follow the schedule.
   force: ""
   overrides:
-    # src under static/ is served from this repo; anything else from the assets host
     - name: "pirate"
-      src: "static/images/web/logos/chuntfm_eye_bones.svg"
+      src: "images/web/logos/chuntfm_eye_bones.svg"
       from: "2026-10-26T00:00:00Z"
       until: "2026-11-02T00:00:00Z"
       invert_dark: true
