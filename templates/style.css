@@ -54,6 +54,8 @@
 
 html {
     font-size: 16px;
+    background-color: var(--bg);
+    transition: background-color 0.3s;
 }
 
 body {
@@ -95,23 +97,28 @@ body::before {
     background-size: 256px 256px;
 }
 
-/* Panorama Bar shutters: sunlight layer behind the content, toggled by html.shutters-open */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(ellipse 120% 90% at 50% 0%, #fffdf3 0%, #fff3c4 45%, #ffd978 100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 2s ease, visibility 0s linear 2s;
+/* Panorama Bar shutters: html.shutters-open paints the sunlight on the root canvas and fades
+   the body's own background out over it (shutters.js keeps .shutters-closing on for the fade
+   back). Deliberately no separate fixed layer: a fixed element with a negative z-index and an
+   opacity transition is composited beneath the whole page, which forces every element painted
+   above it onto its own layer, and that got the page killed on iOS at :11. background-color is
+   not GPU-accelerated, so this is a plain repaint of the visible tiles. */
+html.shutters-open,
+html.shutters-closing {
+    background-color: #ffd978;
+    background-image: radial-gradient(ellipse 120% 90% at 50% 0%, #fffdf3 0%, #fff3c4 45%, #ffd978 100%);
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+    transition: none;
 }
 
-html.shutters-open body::after {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 2s ease;
+html.shutters-open body,
+html.shutters-closing body {
+    transition: background-color 2s ease, color 0.3s;
+}
+
+html.shutters-open body {
+    background-color: transparent;
 }
 
 /* Boat night: html.boat while the page rolls. boat.js writes transform and transform-origin
