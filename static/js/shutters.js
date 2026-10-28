@@ -14,18 +14,30 @@
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     var HOUR = 3600000;
+    var FADE_MS = 2000; // matches the body background-color transition in style.css
     var durationMs = duration * 1000;
     var root = document.documentElement;
     var closeTimer = null;
+    var fadeTimer = null;
     var target = 0;
 
     function open(ms) {
         if (closeTimer) clearTimeout(closeTimer);
+        if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+        root.classList.remove("shutters-closing");
         root.classList.add("shutters-open");
-        closeTimer = setTimeout(function () {
-            root.classList.remove("shutters-open");
-            closeTimer = null;
-        }, ms);
+        closeTimer = setTimeout(close, ms);
+    }
+
+    // Keep the sunlight painted on the root until the body has faded back over it
+    function close() {
+        closeTimer = null;
+        root.classList.add("shutters-closing");
+        root.classList.remove("shutters-open");
+        fadeTimer = setTimeout(function () {
+            root.classList.remove("shutters-closing");
+            fadeTimer = null;
+        }, FADE_MS);
     }
 
     // Next occurrence of :minute UTC strictly after `from` (ms timestamp)
