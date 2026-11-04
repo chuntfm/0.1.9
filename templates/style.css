@@ -429,6 +429,16 @@ html.shutters-open body {
     vertical-align: middle;
 }
 
+/* While the menu is open, this cell runs straight into the record row */
+html.record-open #links-cell {
+    border-bottom-style: hidden;
+}
+
+/* The record already has both pages; hidden keeps the row's height */
+html.record-open #links-quick {
+    visibility: hidden;
+}
+
 #links-toggle {
     position: absolute;
     top: 0;
@@ -574,6 +584,7 @@ html.js #record-row:not(.open) #record-fold {
 }
 
 html.record-ready #record-host {
+    position: relative;
     display: block;
     width: 100%;
     max-width: 480px;
@@ -601,11 +612,23 @@ html.record-ready #record-controls {
     width: 100%;
     height: auto;
     overflow: visible;
+    /* The square's corners sweep over nearby controls as it turns, so only the round record catches touches */
+    pointer-events: none;
     touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+/* Its own layer only while open: spinning rotates the drawn image instead of redrawing the text */
+#record-row.open .record-disc {
+    will-change: transform;
+}
+
+.record-grab {
+    fill: transparent;
+    pointer-events: fill;
 }
 
 .record-disc a {
@@ -644,6 +667,12 @@ html.record-ready #record-controls {
 }
 
 .record-hole {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 9%;
+    height: auto;
+    transform: translate(-50%, -50%);
     fill: var(--bg);
     pointer-events: none;
 }
@@ -1446,6 +1475,12 @@ button.mini-btn {
     #links-cell {
         display: block;
         width: auto;
+    }
+
+    /* Transparent rather than hidden, so the row keeps its height */
+    html.record-open #links-cell {
+        border-bottom-style: solid;
+        border-bottom-color: transparent;
     }
 
     /* A chevron centered on the capitals says "go to", not "you are here";
