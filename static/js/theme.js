@@ -33,14 +33,41 @@
 
     function setLinksOpen(open) {
         recordRow.classList.toggle("open", open);
+        document.documentElement.classList.toggle("record-open", open);
         recordFold.inert = !open;
         linksToggle.setAttribute("aria-expanded", open ? "true" : "false");
         linksToggle.setAttribute("aria-label", open ? "Close menu" : "More links");
         if (window.__setRecordOpen) window.__setRecordOpen(open);
     }
 
+    // On phones, scroll the record into view in step with the unfold,
+    // stopping before the drop-down would go under the mini player.
+    // Ends early if the visitor scrolls or the menu closes.
+    function slideRecordIntoView() {
+        if (!window.matchMedia("(max-width: 768px)").matches) return;
+        var panel = document.getElementById("record-panel");
+        var cell = document.getElementById("links-cell").getBoundingClientRect();
+        var miniHeight = document.getElementById("mini-player").offsetHeight;
+        var distance = Math.min(cell.bottom + panel.offsetHeight - window.innerHeight, cell.top - miniHeight);
+        if (distance <= 0) return;
+        var startY = window.scrollY;
+        var lastY = startY;
+
+        function follow() {
+            if (window.scrollY !== lastY || !recordRow.classList.contains("open")) return;
+            // +1 absorbs pixel rounding
+            var progress = Math.min((recordFold.offsetHeight + 1) / panel.offsetHeight, 1);
+            window.scrollTo(0, startY + distance * progress);
+            lastY = window.scrollY;
+            if (progress < 1) requestAnimationFrame(follow);
+        }
+        follow();
+    }
+
     linksToggle.addEventListener("click", function () {
-        setLinksOpen(!recordRow.classList.contains("open"));
+        var open = !recordRow.classList.contains("open");
+        setLinksOpen(open);
+        if (open) slideRecordIntoView();
     });
 
     document.addEventListener("keydown", function (e) {
