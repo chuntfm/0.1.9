@@ -34,6 +34,8 @@
     var miniPlayer = document.getElementById("mini-player");
     var miniPlayBtn = document.getElementById("mini-play-btn");
     var miniStopBtn = document.getElementById("mini-stop-btn");
+    var miniAlien = document.getElementById("mini-alien");
+    var miniAlienStripRequested = false;
     var siteTitle = document.getElementById("site-title");
     var jukeboxLabel = document.getElementById("jukebox-label");
 
@@ -48,7 +50,6 @@
     var currentVolume = parseFloat(localStorage.getItem("volume"));
     if (isNaN(currentVolume)) currentVolume = 1.0;
     var playerDot = document.getElementById("player-dot");
-    var miniVolDot = document.getElementById("mini-vol-dot");
 
     function setVolume(vol) {
         currentVolume = Math.max(0, Math.min(1, vol));
@@ -66,11 +67,6 @@
             playerDot.style.setProperty("--vol-scale", scale);
             playerDot.setAttribute("aria-valuenow", pct);
             playerDot.setAttribute("aria-label", "Volume " + pct + "%");
-        }
-        if (miniVolDot) {
-            miniVolDot.style.setProperty("--vol-scale", scale);
-            miniVolDot.setAttribute("aria-valuenow", pct);
-            miniVolDot.setAttribute("aria-label", "Volume " + pct + "%");
         }
     }
 
@@ -183,6 +179,24 @@
         stopLabel.hidden = !isPlaying;
         miniPlayBtn.hidden = isActive;
         miniStopBtn.hidden = !isActive;
+        if (isPlaying) {
+            loadMiniAlienStrip();
+            miniAlien.classList.add("dancing");
+        } else {
+            miniAlien.classList.remove("dancing");
+        }
+    }
+
+    // Frame strip loads on first play; until then the alien is a small still image
+    function loadMiniAlienStrip() {
+        if (miniAlienStripRequested) return;
+        miniAlienStripRequested = true;
+        var strip = new Image();
+        strip.onload = function () {
+            miniAlien.querySelector("img").src = strip.src;
+            miniAlien.classList.add("strip");
+        };
+        strip.src = miniAlien.getAttribute("data-strip");
     }
 
     // --- Channel switching (jukebox mode) ---
@@ -596,7 +610,6 @@
         setInterval(rotateMiniTitle, 5000);
         try { audio.volume = currentVolume; } catch (e) {}
         initVolumeDot(playerDot);
-        initVolumeDot(miniVolDot);
         updateVolumeDots();
     });
 })();

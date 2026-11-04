@@ -424,8 +424,7 @@ html.boat-glow::before {
     background: transparent;
 }
 
-.player-dot::after,
-.mini-vol-dot::after {
+.player-dot::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -435,13 +434,11 @@ html.boat-glow::before {
     transform: scale(var(--vol-scale, 1));
 }
 
-.player-dot,
-.mini-vol-dot {
+.player-dot {
     cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
 }
 
-.player-dot:active,
-.mini-vol-dot:active {
+.player-dot:active {
     cursor: ns-resize;
 }
 
@@ -1077,7 +1074,8 @@ button.mini-btn {
     letter-spacing: 0.1em;
     color: var(--fg);
     cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
-    padding: 0.3rem 0.7rem;
+    width: 5em;
+    padding: 0.3rem 0;
     border: 1px solid var(--border);
     flex-shrink: 0;
     transition: background 0.15s, color 0.15s;
@@ -1088,14 +1086,35 @@ button.mini-btn {
     color: var(--bg);
 }
 
-.mini-vol-dot {
-    display: inline-block;
-    width: 1.2em;
-    height: 1.2em;
-    position: relative;
+/* Whole-pixel frame size; 128 frames at 50 ms, moved by transform and paused in place */
+.mini-alien {
+    width: 28px;
+    height: 44px;
+    margin: -0.5rem 0;
+    overflow: hidden;
     flex-shrink: 0;
-    vertical-align: middle;
-    background: transparent;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.mini-alien img {
+    display: block;
+    height: 100%;
+    width: auto;
+    max-width: none;
+}
+
+.mini-alien.strip img {
+    animation: alien-dance 6.4s steps(128) infinite paused;
+}
+
+.mini-alien.strip.dancing img {
+    animation-play-state: running;
+}
+
+@keyframes alien-dance {
+    to { transform: translateX(-100%); }
 }
 
 #mini-now-playing {
