@@ -1585,6 +1585,11 @@ button.mini-btn {
         min-height: 44px;
     }
 
+    /* Room to scroll the play button to the top while page content is still loading */
+    #swup-content {
+        min-height: 100vh;
+    }
+
     #previous-body {
         max-height: none;
         overflow-y: visible;
