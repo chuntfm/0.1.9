@@ -81,12 +81,11 @@
 
     var cachedNow = null;
     var cachedUpnext = null;
-    var cachedPrevious = null;
 
     function reRenderAll() {
         renderShows(nowContent, cachedNow, "no live show");
         renderShows(upnextContent, cachedUpnext, "I'm coming up");
-        renderShows(previousContent, cachedPrevious, "no previous shows");
+        redrawPrevious();
     }
 
     // --- Rendering ---
@@ -352,15 +351,251 @@
             .catch(function () {});
     }
 
+    // --- PREVIOUS: loaded in batches, kept sorted newest first ---
+
+    var PREVIOUS_LIMIT = 50;
+    var PREVIOUS_OVERLAP = 5;
+    var PREVIOUS_MARGIN = "0px 0px 1500px 0px";
+    var PREVIOUS_RETRY_MS = 30000;
+
+    function newPreviousState() {
+        return {
+            entries: [],
+            seen: {},
+            nextOffset: 0,
+            done: false,
+            loading: false,
+            refreshing: false,
+            observer: null,
+            observerRoot: null,
+            sentinel: null,
+            retryTimer: null,
+            lastRefresh: 0
+        };
+    }
+
+    var prev = newPreviousState();
+
+    function fetchPreviousPage(offset) {
+        return fetch(apiBase + config.api.schedule_previous +
+            "?limit=" + PREVIOUS_LIMIT + "&offset=" + offset)
+            .then(okJson)
+            .then(normalizeResponse);
+    }
+
+    function createDayHeading(day) {
+        var heading = document.createElement("div");
+        heading.className = "day-heading";
+        heading.textContent = day === "unknown" ? day : formatDateHeading(day);
+        return heading;
+    }
+
+    function addPreviousShow(show) {
+        var key = show.id + "|" + (show.start || show.starttime);
+        if (prev.seen[key]) return false;
+        prev.seen[key] = true;
+
+        var entries = prev.entries;
+        if (entries.length === 0) previousContent.innerHTML = "";
+
+        var entry = {
+            show: show,
+            time: new Date(show.start || show.starttime).getTime() || 0,
+            day: getShowDate(show) || "unknown",
+            el: renderShow(show)
+        };
+
+        // First position holding an older show
+        var low = 0;
+        var high = entries.length;
+        while (low < high) {
+            var mid = (low + high) >> 1;
+            if (entries[mid].time < entry.time) high = mid;
+            else low = mid + 1;
+        }
+        var before = entries[low - 1];
+        var after = entries[low];
+
+        if (before && before.day === entry.day) {
+            previousContent.insertBefore(entry.el, before.el.nextSibling);
+        } else if (after && after.day === entry.day) {
+            previousContent.insertBefore(entry.el, after.el);
+        } else {
+            // A different day follows, so its heading is the next element
+            var next = after ? after.el.previousSibling : null;
+            previousContent.insertBefore(createDayHeading(entry.day), next);
+            previousContent.insertBefore(entry.el, next);
+        }
+        entries.splice(low, 0, entry);
+        return true;
+    }
+
+    // The element that scrolls the list: its own box if it really scrolls, else the page
+    function previousScrollBox() {
+        var body = previousContent && previousContent.parentNode;
+        if (body && getComputedStyle(body).overflowY === "auto" &&
+                body.scrollHeight > body.clientHeight + 1) return body;
+        return null;
+    }
+
+    // Adds shows while keeping what the visitor is looking at in place
+    function addPreviousShows(shows) {
+        var box = previousScrollBox();
+        var viewTop = box ? box.getBoundingClientRect().top : 0;
+        var scrolled = box ? box.scrollTop > 0 : window.pageYOffset > 0;
+        var anchor = null;
+        if (scrolled && previousContent.getBoundingClientRect().top < viewTop) {
+            for (var i = 0; i < prev.entries.length; i++) {
+                if (prev.entries[i].el.getBoundingClientRect().bottom > viewTop) {
+                    anchor = prev.entries[i].el;
+                    break;
+                }
+            }
+        }
+        var anchorTop = anchor ? anchor.getBoundingClientRect().top : 0;
+
+        var added = 0;
+        shows.forEach(function (show) {
+            if (addPreviousShow(show)) added++;
+        });
+
+        if (anchor) {
+            var delta = anchor.getBoundingClientRect().top - anchorTop;
+            if (delta) {
+                if (box) box.scrollTop += delta;
+                else window.scrollBy(0, delta);
+            }
+        }
+        return added;
+    }
+
+    function watchPreviousEnd() {
+        if (!window.IntersectionObserver) return;
+        var state = prev;
+        var box = previousScrollBox();
+        if (state.observer) state.observer.disconnect();
+        state.observerRoot = box;
+        state.observer = new IntersectionObserver(function (items) {
+            if (state === prev && items[items.length - 1].isIntersecting) loadMorePrevious();
+        }, { root: box, rootMargin: PREVIOUS_MARGIN });
+        state.observer.observe(state.sentinel);
+    }
+
+    // Observing again reports the current position, even if it has not changed
+    function checkPreviousEnd() {
+        if (prev.done) return;
+        if (!prev.sentinel) {
+            prev.sentinel = document.createElement("div");
+            prev.sentinel.setAttribute("aria-hidden", "true");
+            prev.sentinel.style.height = "1px";
+            previousContent.parentNode.insertBefore(prev.sentinel, previousContent.nextSibling);
+            watchPreviousEnd();
+        } else if (prev.observer) {
+            prev.observer.unobserve(prev.sentinel);
+            prev.observer.observe(prev.sentinel);
+        }
+        if (!window.IntersectionObserver) loadMorePrevious();
+    }
+
+    function finishPrevious() {
+        prev.done = true;
+        if (prev.observer) prev.observer.disconnect();
+        prev.observer = null;
+        if (prev.sentinel) prev.sentinel.remove();
+        prev.sentinel = null;
+        if (prev.entries.length === 0) {
+            renderShows(previousContent, [], "no previous shows");
+        }
+    }
+
+    function applyPreviousPage(shows, offset) {
+        addPreviousShows(shows);
+        prev.nextOffset = Math.max(prev.nextOffset, offset + shows.length);
+        if (shows.length < PREVIOUS_LIMIT) finishPrevious();
+        else checkPreviousEnd();
+    }
+
+    function loadMorePrevious() {
+        if (prev.loading || prev.done) return;
+        var state = prev;
+        var offset = Math.max(0, state.nextOffset - PREVIOUS_OVERLAP);
+        state.loading = true;
+        clearTimeout(state.retryTimer);
+        fetchPreviousPage(offset)
+            .then(function (shows) {
+                if (state !== prev) return;
+                state.loading = false;
+                applyPreviousPage(shows, offset);
+            })
+            .catch(function () {
+                if (state !== prev) return;
+                state.loading = false;
+                state.retryTimer = setTimeout(function () {
+                    if (state !== prev) return;
+                    if (state.entries.length === 0) loadMorePrevious();
+                    else checkPreviousEnd();
+                }, PREVIOUS_RETRY_MS);
+            });
+    }
+
+    function resetPrevious() {
+        if (prev.observer) prev.observer.disconnect();
+        if (prev.sentinel) prev.sentinel.remove();
+        clearTimeout(prev.retryTimer);
+        prev = newPreviousState();
+    }
+
+    function refreshPrevious() {
+        if (document.hidden || prev.refreshing) return;
+        var state = prev;
+        state.refreshing = true;
+        state.lastRefresh = Date.now();
+        fetchPreviousPage(0)
+            .then(function (shows) {
+                if (state !== prev) return;
+                state.refreshing = false;
+                var overlaps = shows.some(function (show) {
+                    return state.seen[show.id + "|" + (show.start || show.starttime)];
+                });
+                if (shows.length > 0 && !overlaps) {
+                    // More shows ended than one page holds: start the list again
+                    var lastRefresh = state.lastRefresh;
+                    resetPrevious();
+                    prev.lastRefresh = lastRefresh;
+                    previousContent.innerHTML = "";
+                    applyPreviousPage(shows, 0);
+                    return;
+                }
+                state.nextOffset += addPreviousShows(shows);
+            })
+            .catch(function () {
+                if (state === prev) state.refreshing = false;
+            });
+    }
+
     function fetchPrevious() {
         if (!previousContent) return;
-        fetch(apiBase + config.api.schedule_previous)
-            .then(okJson)
-            .then(function (data) {
-                cachedPrevious = normalizeResponse(data).reverse();
-                renderShows(previousContent, cachedPrevious, "no previous shows");
-            })
-            .catch(function () {});
+        if (prev.entries.length > 0) {
+            refreshPrevious();
+        } else {
+            prev.done = false;
+            prev.lastRefresh = Date.now();
+            loadMorePrevious();
+        }
+    }
+
+    function redrawPrevious() {
+        if (!previousContent || prev.entries.length === 0) return;
+        previousContent.innerHTML = "";
+        var lastDay = null;
+        prev.entries.forEach(function (entry) {
+            entry.day = getShowDate(entry.show) || "unknown";
+            entry.el = renderShow(entry.show);
+            if (entry.day !== lastDay) previousContent.appendChild(createDayHeading(entry.day));
+            previousContent.appendChild(entry.el);
+            lastDay = entry.day;
+        });
+        checkPreviousEnd();
     }
 
     // --- Init ---
@@ -377,6 +612,7 @@
         nowContent = document.getElementById("now-content");
         upnextContent = document.getElementById("upnext-content");
         previousContent = document.getElementById("previous-content");
+        resetPrevious();
         if (nowContent || upnextContent || previousContent) {
             fetchAll();
         }
@@ -400,5 +636,21 @@
             setInterval(fetchUpnext, pollUpnext * 1000);
             setInterval(fetchPrevious, pollPrevious * 1000);
         }
+
+        // A hidden tab skips its refreshes, so catch up on return
+        var previousInterval = (pollPrevious || 30) * 1000;
+        document.addEventListener("visibilitychange", function () {
+            if (!document.hidden && previousContent &&
+                    Date.now() - prev.lastRefresh >= previousInterval) {
+                fetchPrevious();
+            }
+        });
+
+        // A layout change can move scrolling between the list's box and the page
+        window.addEventListener("resize", function () {
+            if (prev.sentinel && prev.observer && previousScrollBox() !== prev.observerRoot) {
+                watchPreviousEnd();
+            }
+        });
     });
 })();
