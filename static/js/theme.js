@@ -20,43 +20,44 @@
         });
     }
 
+    // iOS only applies :active during a press when a touch listener exists
+    document.addEventListener("touchstart", function () {}, { passive: true });
+
     // --- Links expand/collapse ---
 
     var linksToggle = document.getElementById("links-toggle");
-    var linksCollapsed = document.getElementById("links-collapsed");
+    var linksQuick = document.getElementById("links-quick");
     var linksExpanded = document.getElementById("links-expanded");
+    var recordRow = document.getElementById("record-row");
+    var recordFold = document.getElementById("record-fold");
 
-    function expandLinks() {
-        linksCollapsed.hidden = true;
-        linksExpanded.hidden = false;
-        linksToggle.setAttribute("aria-expanded", "true");
-        linksToggle.setAttribute("aria-label", "Close menu");
+    function setLinksOpen(open) {
+        recordRow.classList.toggle("open", open);
+        recordFold.inert = !open;
+        linksToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        linksToggle.setAttribute("aria-label", open ? "Close menu" : "More links");
+        if (window.__setRecordOpen) window.__setRecordOpen(open);
     }
 
-    function collapseLinks() {
-        linksExpanded.hidden = true;
-        linksCollapsed.hidden = false;
-        linksToggle.setAttribute("aria-expanded", "false");
-        linksToggle.setAttribute("aria-label", "More links");
-    }
+    linksToggle.addEventListener("click", function () {
+        setLinksOpen(!recordRow.classList.contains("open"));
+    });
 
-    function toggleLinks() {
-        if (linksExpanded.hidden) {
-            expandLinks();
-        } else {
-            collapseLinks();
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && recordRow.classList.contains("open")) {
+            setLinksOpen(false);
+            linksToggle.focus();
         }
+    });
+
+    // Collapse the menu when an internal link is clicked (record words included)
+    function collapseOnInternalLink(e) {
+        var link = e.target.closest("a");
+        if (link && link.getAttribute("target") !== "_blank") setLinksOpen(false);
     }
 
-    if (linksToggle) linksToggle.addEventListener("click", toggleLinks);
-
-    // Collapse drawer when an internal nav link is clicked
-    if (linksExpanded) {
-        var internalLinks = linksExpanded.querySelectorAll('.nav-link:not([target="_blank"])');
-        internalLinks.forEach(function (link) {
-            link.addEventListener("click", collapseLinks);
-        });
-    }
+    linksExpanded.addEventListener("click", collapseOnInternalLink);
+    if (linksQuick) linksQuick.addEventListener("click", collapseOnInternalLink);
 
     // --- Email obfuscation assembly ---
 

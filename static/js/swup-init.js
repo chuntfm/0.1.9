@@ -78,6 +78,7 @@
         if (!swupContent) return;
         var page = swupContent.getAttribute("data-page");
         var currentSlug = page === "home" ? "" : page;
+        if (window.__setRecordPage) window.__setRecordPage(currentSlug);
         var pages = (window.SITE_CONFIG || {}).pages || [];
         var currentPage = null;
         for (var i = 0; i < pages.length; i++) {
@@ -89,10 +90,10 @@
             if (pages[j].slug === defaultSlug) { defaultPage = pages[j]; break; }
         }
         if (!defaultPage) return;
-        var collapsedLink = document.querySelector("#links-collapsed .nav-link");
-        if (collapsedLink) {
-            collapsedLink.href = "/" + (defaultPage.slug ? defaultPage.slug + "/" : "");
-            collapsedLink.textContent = defaultPage.nav_name.toUpperCase();
+        var quickLink = document.getElementById("links-quick");
+        if (quickLink) {
+            quickLink.href = "/" + (defaultPage.slug ? defaultPage.slug + "/" : "");
+            quickLink.textContent = defaultPage.nav_name.toUpperCase();
         }
     }
 
