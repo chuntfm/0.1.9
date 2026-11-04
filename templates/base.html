@@ -95,40 +95,67 @@
             {%- set current_nav = nav_pages | selectattr('slug', 'equalto', current_slug) | first -%}
             {%- set default_slug = current_nav.nav_default if current_nav and current_nav.nav_default is defined else '' -%}
             {%- set default_page = nav_pages | selectattr('slug', 'equalto', default_slug) | first -%}
-            <div id="links-collapsed" hidden>
-                {% if default_page %}
-                <a href="/{{ default_page.slug ~ '/' if default_page.slug else '' }}" class="nav-link">{{ default_page.nav_name | upper }}</a>
+            {% if default_page %}
+            <a href="/{{ default_page.slug ~ '/' if default_page.slug else '' }}" class="nav-link" id="links-quick">{{ default_page.nav_name | upper }}</a>
+            {% endif %}
+            <button id="links-toggle" class="js-only" type="button" aria-expanded="false" aria-controls="record-row" aria-label="More links"><svg class="links-toggle-icon" viewBox="0 0 10 7" aria-hidden="true"><path d="M.5 .5H9.5L5 6.5Z" fill="currentColor"/></svg></button>
+        </div>
+    </div>
+
+</div>
+
+<!-- RECORD ROW: spans all columns, so it sits between the two tables -->
+<div id="record-row">
+    <div id="record-fold">
+        <div id="record-panel">
+            <div class="record-side" id="record-quote-side">
+                {% if random_quote %}
+                <span class="links-quote">{{ random_quote }}</span>
                 {% endif %}
             </div>
-            <button id="links-toggle" class="links-toggle-btn js-only" aria-expanded="false" aria-label="More links"><svg class="links-toggle-icon links-toggle-down" viewBox="0 0 10 7" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0.5,0.5 5,6 9.5,0.5"/></svg><svg class="links-toggle-icon links-toggle-up" viewBox="0 0 10 7" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="0.5,6 5,0.5 9.5,6"/></svg></button>
             <nav id="links-expanded" aria-label="Site navigation">
-                {% for page in nav_pages %}
-                <a href="/{{ page.slug ~ '/' if page.slug else '' }}" class="nav-link">{{ page.nav_name | upper }}</a>
-                {% endfor %}
-                <div class="links-separator"></div>
-                {% for link in config.links.primary %}
-                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a>
-                {% endfor %}
-                {% for link in config.links.secondary %}
-                <a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a>
-                {% endfor %}
+                <div id="record-host"></div>
+                <div id="links-list">
+                    <ul>
+                        {% for page in nav_pages %}
+                        <li><a href="/{{ page.slug ~ '/' if page.slug else '' }}" class="nav-link" data-slug="{{ page.slug }}"{% if page.slug == current_slug %} aria-current="page"{% endif %}>{{ page.nav_name | upper }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <ul>
+                        {% for link in config.links.primary %}
+                        <li><a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <ul>
+                        {% for link in config.links.secondary %}
+                        <li><a href="{{ link.url }}" target="_blank" rel="noopener" class="nav-link">{{ link.name | upper }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div id="record-controls">
+                    <span id="record-rpm" role="group" aria-label="Record speed">
+                        <button class="record-btn" type="button" data-rpm="0" aria-label="0 rpm, stopped" aria-pressed="false">0</button>
+                        <button class="record-btn" type="button" data-rpm="33" aria-label="33 rpm" aria-pressed="true">33</button>
+                        <button class="record-btn" type="button" data-rpm="45" aria-label="45 rpm" aria-pressed="false">45</button>
+                        <span id="record-rpm-unit">rpm</span>
+                    </span>
+                    <button class="record-btn" id="record-view" type="button">show as list</button>
+                </div>
+            </nav>
+            <div class="record-side" id="record-mail-side">
                 {% if config.links.email %}
                 <span class="drawer-email" id="obfuscated-email"
                       data-u="{{ config.links.email.split('@')[0] }}"
                       data-d="{{ config.links.email.split('@')[1] }}"></span>
                 {% endif %}
-                {% if random_quote %}
-                <span class="links-quote">{{ random_quote }}</span>
-                {% endif %}
-            </nav>
-            <script>
-                document.getElementById('links-collapsed').hidden = false;
-                document.getElementById('links-expanded').hidden = true;
-            </script>
+            </div>
         </div>
     </div>
+    <script>document.getElementById('record-fold').inert = true;</script>
+</div>
 
-    <!-- TIMEZONE TOGGLE ROW -->
+<!-- TIMEZONE TOGGLE ROW -->
+<div id="tz-table">
     {% call utility_row(id="tz-row", cell_id="tz-cell") %}
         <label class="tz-switch">
             <input type="checkbox" id="tz-toggle" checked aria-label="Toggle timezone display">
@@ -138,8 +165,6 @@
         </label>
         <span id="tz-label" class="tz-current"></span>
     {% endcall %}
-
-
 </div>
 </header>
 
@@ -169,6 +194,7 @@
 <script src="{{ local }}/js/schedule.js"></script>
 <script src="{{ local }}/js/archive.js"></script>
 <script src="{{ local }}/js/theme.js"></script>
+<script src="{{ local }}/js/record.js"></script>
 <script src="{{ local }}/js/shutters.js"></script>
 <script src="{{ local }}/js/boat.js"></script>
 <script src="{{ local }}/js/swup-init.js"></script>

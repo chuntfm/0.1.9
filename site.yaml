@@ -35,19 +35,19 @@ links:
   primary:
     - name: "Mixcloud"
       url: "https://www.mixcloud.com/chuntfm/"
-  secondary:
     - name: "Instagram"
       url: "https://www.instagram.com/chuntongo/"
     - name: "Twitter"
       url: "https://twitter.com/chuntfm"
+    - name: "Telegram Channel"
+      url: "https://t.me/+PNlaAyRDMSI1Mzhi"
+  secondary:
     - name: "Ch3"
       url: "https://radioactivity.directory/ch3"
     - name: "Bandcamp Explorer"
       url: "https://bc-explorer.app/"
     - name: "Artwork Generator"
       url: "https://tag.chunt.org/artwork-generator"
-    - name: "Telegram Channel"
-      url: "https://t.me/+PNlaAyRDMSI1Mzhi"
     - name: "Yummy"
       url: "https://ghxm.github.io/yummy"
   email: "spam@protect.org"
@@ -62,6 +62,12 @@ shutters:
   enabled: true
   minute: 11
   duration: 12
+
+# Menu record. 33 and 45 rpm run this many times slower than real speed.
+record:
+  slowdown: 40
+  settle_delay: 4
+  updates_per_second: 30
 
 boat:
   sway:

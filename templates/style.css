@@ -77,7 +77,7 @@ details {
     cursor: url('{{ assets }}/images/web/cursors/luigi_cursor_hat.png'), auto;
 }
 
-a, button, audio, .cell-btn, .links-toggle-btn, .mini-btn {
+a, button, audio, .cell-btn, .mini-btn {
     cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
 }
 
@@ -506,92 +506,354 @@ html.boat-glow::before {
 
 /* === LINKS CELL === */
 #links-cell {
+    position: relative;
     text-align: center;
     vertical-align: middle;
-    overflow: hidden;
 }
 
-#links-collapsed {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#links-collapsed .nav-link {
-    padding: 0;
-}
-
-.links-toggle-btn {
-    display: inline-flex;
+#links-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    min-width: 2.8rem;
+    padding: 0 0.7rem;
     background: none;
     border: none;
-    font-family: var(--font-heading);
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
     color: var(--fg);
-    cursor: url('{{ assets }}/images/web/cursors/luigi_point.png'), pointer;
-    padding: 0.25rem 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+#links-toggle:active {
+    background: var(--highlight);
+    color: var(--bg);
+}
+
+@media (hover: hover) {
+    #links-toggle:hover {
+        background: var(--highlight);
+        color: var(--bg);
+    }
+}
+
+html:not(.js) #links-toggle {
+    display: none;
 }
 
 .links-toggle-icon {
-    width: 1em;
-    height: 1em;
+    display: block;
+    flex: none;
+    width: 0.85rem;
+    height: 0.6rem;
+    transition: transform 0.3s;
 }
 
-.links-toggle-up {
-    display: none;
+#links-toggle[aria-expanded="true"] .links-toggle-icon {
+    transform: rotate(180deg);
 }
 
-.links-toggle-btn[aria-expanded="true"] .links-toggle-down {
-    display: none;
+/* === RECORD ROW === */
+#record-row {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.45s ease;
 }
 
-.links-toggle-btn[aria-expanded="true"] .links-toggle-up {
-    display: inline;
+html.js #record-row:not(.open) {
+    grid-template-rows: 0fr;
 }
 
-.links-toggle-btn:hover {
-    opacity: 0.6;
+#record-fold {
+    overflow: hidden;
+    min-height: 0;
 }
 
-.nav-link-inline {
-    display: inline;
+html.js #record-row:not(.open) #record-fold {
+    visibility: hidden;
+    transition: visibility 0s 0.45s;
 }
 
-.links-separator {
-    border-top: 1px solid var(--fg);
-    opacity: 0.15;
-    margin: 0.3rem 0;
+#record-panel {
+    display: grid;
+    grid-template-columns: 24% 52% 24%;
+    border-bottom: 2px solid var(--border);
+}
+
+.record-side {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1.25rem;
+    text-align: center;
 }
 
 .links-quote {
     font-family: var(--font-heading);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.15rem 0;
-    display: block;
-    opacity: 0.4;
-    white-space: normal;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    text-transform: lowercase;
+    opacity: 0.65;
 }
 
-#links-expanded {
-    padding: 0.5rem 0;
-}
-
-#links-expanded .nav-link {
-    padding: 0.6rem 0;
-}
-
-#links-expanded .drawer-email {
-    display: block;
+.drawer-email {
     font-family: var(--font-body);
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     color: var(--fg);
     opacity: 0.7;
-    padding: 0.6rem 0;
+}
+
+#links-expanded {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.6rem;
+}
+
+#links-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+}
+
+#links-list[hidden] {
+    display: none;
+}
+
+#links-list ul {
+    list-style: none;
+}
+
+#links-list .nav-link {
+    padding: 0.75rem 0.2rem;
+}
+
+#links-list .nav-link:active,
+#links-list .nav-link:focus-visible {
+    color: var(--highlight);
+}
+
+@media (hover: hover) {
+    #links-list .nav-link:hover {
+        color: var(--highlight);
+    }
+}
+
+#links-list .nav-link[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+}
+
+/* Record and controls only appear once record.js has built the record */
+#record-host,
+#record-controls {
+    display: none;
+}
+
+html.record-ready #record-host {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    transition: transform 0.45s ease, opacity 0.3s ease;
+}
+
+html.record-ready #record-host[hidden] {
+    display: none;
+}
+
+html.js #record-row:not(.open) #record-host {
+    transform: scale(0.15);
+    opacity: 0;
+}
+
+html.record-ready #record-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 0.4rem;
+}
+
+.record-disc {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.record-disc a {
+    outline: none;
+}
+
+.record-word {
+    font-family: var(--font-heading);
+    letter-spacing: 0.1em;
+    fill: var(--fg);
+    text-rendering: geometricPrecision;
+    pointer-events: none;
+    transition: fill 0.12s;
+}
+
+.record-rim,
+.record-line {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.record-line {
+    stroke-opacity: 0.2;
+}
+
+.record-label {
+    fill: var(--fg);
+    fill-opacity: 0.09;
+    stroke: var(--fg);
+    stroke-opacity: 0.2;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+}
+
+.record-hole {
+    fill: var(--bg);
+    pointer-events: none;
+}
+
+.record-hit {
+    fill: none;
+    stroke: transparent;
+    pointer-events: stroke;
+}
+
+.record-underline {
+    fill: none;
+    stroke: var(--highlight);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.record-disc a:active .record-word,
+.record-disc a:focus-visible .record-word {
+    fill: var(--highlight);
+}
+
+.record-disc a:active .record-underline,
+.record-disc a:focus-visible .record-underline,
+.record-disc a[aria-current="page"] .record-underline {
+    opacity: 1;
+}
+
+.record-disc a:focus-visible .record-underline {
+    stroke-width: 2;
+}
+
+.record-disc a[aria-current="page"] .record-underline {
+    stroke: var(--fg);
+}
+
+.record-disc a[aria-current="page"]:active .record-underline,
+.record-disc a[aria-current="page"]:focus-visible .record-underline {
+    stroke: var(--highlight);
+}
+
+@media (hover: hover) {
+    .record-disc a:hover .record-word {
+        fill: var(--highlight);
+    }
+
+    .record-disc a:hover .record-underline {
+        opacity: 1;
+    }
+
+    .record-disc a[aria-current="page"]:hover .record-underline {
+        stroke: var(--highlight);
+    }
+}
+
+.record-btn {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    color: var(--fg);
+    background: none;
+    border: none;
+    opacity: 0.7;
+    padding: 0.7em 0.3em;
+}
+
+.record-btn:active,
+.record-btn:focus-visible {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+@media (hover: hover) {
+    .record-btn:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+}
+
+#record-rpm {
+    display: inline-flex;
+    align-items: baseline;
+}
+
+#record-rpm[hidden] {
+    display: none;
+}
+
+#record-rpm .record-btn {
+    padding: 0.7em 0.5em;
+}
+
+/* In the speed row the underline only marks the selected speed */
+#record-rpm .record-btn:active,
+#record-rpm .record-btn:focus-visible {
+    text-decoration: none;
+}
+
+@media (hover: hover) {
+    #record-rpm .record-btn:hover {
+        text-decoration: none;
+    }
+}
+
+#record-rpm .record-btn[aria-pressed="true"] {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+#record-rpm .record-btn.real {
+    font-weight: 700;
+}
+
+#record-rpm-unit {
+    font-family: var(--font-heading);
+    font-size: 0.78rem;
+    opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #record-row,
+    #record-fold,
+    html.record-ready #record-host,
+    .links-toggle-icon {
+        transition: none;
+    }
 }
 
 /* === SWUP TRANSITIONS === */
@@ -665,8 +927,20 @@ html.is-changing .transition-main {
     padding: 0.25rem 0;
 }
 
-.nav-link:hover {
+.nav-link:active {
     text-decoration: underline;
+}
+
+/* Touch screens keep :hover after a tap, so hover effects are for real pointers only */
+@media (hover: hover) {
+    .nav-link:hover {
+        text-decoration: underline;
+    }
+
+    /* The quick link's label changes under the pointer, so it only underlines while pressed */
+    #links-quick:not(:active):hover {
+        text-decoration: none;
+    }
 }
 
 /* === UTILITY ROW (full-width single cell) === */
@@ -678,6 +952,16 @@ html.is-changing .transition-main {
     padding: 0.4rem 1.25rem;
     border: none;
     white-space: nowrap;
+}
+
+/* Keeps the tz toggle in the first column, now that it sits outside the table */
+#tz-row,
+#tz-cell {
+    display: block;
+}
+
+#tz-cell {
+    width: 24%;
 }
 
 /* === TIMEZONE TOGGLE === */
@@ -1139,10 +1423,14 @@ button.mini-btn {
     .cell-narrow,
     .cell-label,
     #header-logo,
-    #header-counter {
+    #header-counter,
+    #tz-cell {
         width: 21%;
     }
 
+    #record-panel {
+        grid-template-columns: 21% 58% 21%;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1240,26 +1528,62 @@ button.mini-btn {
     #links-cell {
         display: block;
         width: auto;
-        position: relative;
     }
 
-    #links-cell > .links-toggle-btn {
-        position: absolute;
-        right: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
+    /* A chevron centered on the capitals says "go to", not "you are here";
+       the hidden twin keeps the word centered */
+    #links-quick::before,
+    #links-quick::after {
+        content: "";
+        display: inline-block;
+        width: 0.36em;
+        height: 0.56em;
+        vertical-align: 0.08em;
+        background: currentColor;
+        clip-path: polygon(0 0, 28% 0, 100% 50%, 28% 100%, 0 100%, 72% 50%);
     }
 
-    #links-cell > .links-toggle-btn[aria-expanded="true"] {
-        top: 0.75rem;
-        transform: none;
+    #links-quick::before {
+        margin-right: 0.25em;
     }
 
-    .nav-link {
-        display: inline;
+    #links-quick::after {
+        margin-left: 0.25em;
+        visibility: hidden;
     }
 
+    #record-panel {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid var(--border);
+    }
+
+    #links-expanded {
+        padding: 14px 14px 12px;
+    }
+
+    #links-list {
+        display: block;
+    }
+
+    #links-list ul + ul {
+        margin-top: 0.8rem;
+    }
+
+    #record-mail-side {
+        order: 1;
+        padding: 0.3rem 1rem 0.45rem;
+    }
+
+    #record-quote-side {
+        order: 2;
+        padding: 0.45rem 1rem 0.9rem;
+    }
+
+    .record-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
 
     #previous-body {
         max-height: none;
@@ -1271,7 +1595,8 @@ button.mini-btn {
         display: none;
     }
 
-    #site-table .utility-cell {
+    #tz-table .utility-cell {
+        width: auto;
         border-bottom: 1px solid var(--border);
     }
 
