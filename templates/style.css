@@ -121,88 +121,6 @@ html.shutters-open body {
     background-color: transparent;
 }
 
-/* Boat night: html.boat while the page rolls. boat.js writes transform and transform-origin
-   on #deck and rotate/translate on the mini player every animation frame. No keyframe
-   animation here: on #deck, as tall as the document, it got the page killed on iOS. */
-html.boat {
-    /* Also keeps body's overflow below from propagating to the viewport */
-    overflow-x: hidden;
-}
-
-/* The tilted deck's corners must not change the scrollable size from frame to frame */
-html.boat body {
-    overflow: clip;
-}
-
-html.boat #deck {
-    will-change: transform;
-}
-
-html.boat .mini-player {
-    transform-origin: 50% calc(100% - 50vh);
-}
-
-/* A hidden mini player sits just off the bottom edge; tilted, a corner would peek back in */
-html.boat .mini-player.hidden {
-    visibility: hidden;
-    transition: transform 0.3s ease, background-color 0.3s, visibility 0s linear 0.3s;
-}
-
-/* Afterglow: a warm glow behind the page, strength from --boat-glow (0 to 1), breathing slowly */
-:root {
-    --boat-glow-color: rgba(255, 150, 60, 0.5);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --boat-glow-color: rgba(255, 100, 20, 0.4);
-    }
-}
-
-:root[data-theme="dark"] {
-    --boat-glow-color: rgba(255, 100, 20, 0.4);
-}
-
-@keyframes boat-glow-breathe {
-    0%, 100% { opacity: calc(var(--boat-glow, 0) * 0.7); }
-    50% { opacity: var(--boat-glow, 0); }
-}
-
-/* The layer is twice the viewport width and slides, so the glow's centre wanders along the bottom edge */
-@keyframes boat-glow-drift {
-    from { translate: -25vw 0; }
-    to { translate: 25vw 0; }
-}
-
-/* The colour sweeps slowly through the warm range, rose to amber to gold, six times,
-   then takes one slow trip around the whole spectrum back to where it started */
-@keyframes boat-glow-hue {
-    0% { filter: hue-rotate(-25deg); }
-    12.5% { filter: hue-rotate(25deg); }
-    25% { filter: hue-rotate(-25deg); }
-    37.5% { filter: hue-rotate(25deg); }
-    50% { filter: hue-rotate(-25deg); }
-    62.5% { filter: hue-rotate(25deg); }
-    75% { filter: hue-rotate(-25deg); }
-    100% { filter: hue-rotate(335deg); }
-}
-
-html.boat-glow::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: -50vw;
-    right: -50vw;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(ellipse 60% 80% at 50% 100%, var(--boat-glow-color) 0%, transparent 70%);
-    animation:
-        boat-glow-breathe 24s ease-in-out infinite,
-        boat-glow-drift 300s ease-in-out infinite alternate,
-        boat-glow-hue 1200s ease-in-out infinite;
-}
-
 /* === SKIP LINK === */
 .skip-link {
     position: absolute;
@@ -1622,9 +1540,5 @@ button.mini-btn {
 
     .mini-player.hidden {
         transform: translateY(-100%);
-    }
-
-    html.boat .mini-player {
-        transform-origin: 50% 50vh;
     }
 }
