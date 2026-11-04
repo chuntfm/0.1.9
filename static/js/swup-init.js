@@ -26,6 +26,14 @@
             animationSelector: '[class*="transition-"]',
         });
 
+        // On phones, a menu link lands with the play button at the top of the screen
+        var phone = window.matchMedia("(max-width: 768px)");
+        swup.hooks.before("link:click", function (visit, args) {
+            if (phone.matches && args.el.closest("#links-cell, #links-expanded")) {
+                visit.scroll.target = "#player-section";
+            }
+        });
+
         // Re-init schedule content after each page swap
         swup.hooks.on("page:view", function () {
             if (typeof window.__initSchedule === "function") {
