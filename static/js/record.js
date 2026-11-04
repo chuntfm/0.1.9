@@ -3,6 +3,7 @@
 
     // The menu as a vinyl record: the fishe as spindle hole, a label, three bands of links.
     // Built from the link list in the page, which stays the no-JS fallback and the list view.
+    // The record turns as one drawn layer, so spinning doesn't redraw its text; the fishe sits on top.
     // The loop only runs while the record is open, on screen and moving.
 
     var host = document.getElementById("record-host");
@@ -34,7 +35,6 @@
     var RIM_RADIUS = 197;
 
     var svg = null;
-    var rotor = null;
     var rings = [];
     var angle = 0;
     var cruise = 0;
@@ -79,6 +79,10 @@
 
     function setRotation(node, deg) {
         node.setAttribute("transform", "rotate(" + deg.toFixed(3) + ")");
+    }
+
+    function spin() {
+        svg.style.transform = "rotate(" + angle.toFixed(3) + "deg)";
     }
 
     function measure(label, weight) {
@@ -146,7 +150,7 @@
             }
         }
 
-        setRotation(rotor, angle);
+        spin();
     }
 
     function tick(now) {
@@ -202,7 +206,7 @@
             if (reduced) {
                 angle = to;
                 vel = 0;
-                setRotation(rotor, angle);
+                spin();
             } else {
                 seek = { from: angle, to: to, t: 0, dur: 0.45 };
                 wake();
@@ -217,7 +221,7 @@
     }
 
     function drawBand(band, index, links) {
-        var g = el("g", { transform: "rotate(" + band.phase + ")" }, rotor);
+        var g = el("g", { transform: "rotate(" + band.phase + ")" }, svg);
         var ring = { g: g, angle: band.phase, home: band.phase, inner: band.inner, outer: band.outer };
         rings.push(ring);
 
@@ -251,22 +255,22 @@
         });
     }
 
+    // Outside the rotating layer, so the fishe stays upright
     function drawEye() {
-        var width = 36;
-        var height = width * 582.787 / 737.583;
-        var eye = el("svg", { x: -width / 2, y: -height / 2, width: width, height: height, viewBox: EYE_BOX, "class": "record-hole", "aria-hidden": "true" }, svg);
+        var eye = el("svg", { viewBox: EYE_BOX, "class": "record-hole", "aria-hidden": "true" }, host);
         el("path", { d: EYE }, eye);
     }
 
     // --- Pointer: a band moves on its own, the label turns the whole record ---
+    // Measured on the host: the rotating layer's box grows and shrinks as it turns
 
     function pointerAngle(e) {
-        var box = svg.getBoundingClientRect();
+        var box = host.getBoundingClientRect();
         return Math.atan2(e.clientY - (box.top + box.height / 2), e.clientX - (box.left + box.width / 2)) * 180 / Math.PI;
     }
 
     function ringAt(e) {
-        var box = svg.getBoundingClientRect();
+        var box = host.getBoundingClientRect();
         var r = Math.sqrt(Math.pow(e.clientX - (box.left + box.width / 2), 2) + Math.pow(e.clientY - (box.top + box.height / 2), 2)) * 400 / box.width;
         for (var i = 0; i < rings.length; i++) {
             if (r >= rings[i].inner && r < rings[i].outer) return rings[i];
@@ -299,7 +303,7 @@
             } else {
                 angle += d;
                 vel = 0.65 * (d / Math.max(0.004, (now - down.t) / 1000)) + 0.35 * vel;
-                setRotation(rotor, angle);
+                spin();
             }
             down.t = now;
         });
@@ -370,11 +374,11 @@
         // Words can only be measured once the host is displayed
         document.documentElement.classList.add("record-ready");
         svg = el("svg", { viewBox: "-200 -200 400 400", "class": "record-disc", role: "group", "aria-label": "Site links as a record" }, host);
-        rotor = el("g", {}, svg);
-        el("circle", { r: RIM_RADIUS, "class": "record-rim" }, rotor);
-        el("circle", { r: LABEL_RADIUS, "class": "record-label" }, rotor);
+        el("circle", { r: RIM_RADIUS, "class": "record-grab" }, svg);
+        el("circle", { r: RIM_RADIUS, "class": "record-rim" }, svg);
+        el("circle", { r: LABEL_RADIUS, "class": "record-label" }, svg);
         BANDS.forEach(function (band, i) {
-            if (i < BANDS.length - 1) el("circle", { r: band.outer, "class": "record-line" }, rotor);
+            if (i < BANDS.length - 1) el("circle", { r: band.outer, "class": "record-line" }, svg);
             if (groups[i]) drawBand(band, i, Array.prototype.slice.call(groups[i].querySelectorAll("a")));
         });
         drawEye();
