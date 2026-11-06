@@ -439,6 +439,28 @@ html.record-open #links-quick {
     visibility: hidden;
 }
 
+/* A chevron centered on the capitals says "go to", not "you are here";
+   the hidden twin keeps the word centered */
+#links-quick::before,
+#links-quick::after {
+    content: "";
+    display: inline-block;
+    width: 0.36em;
+    height: 0.56em;
+    vertical-align: 0.08em;
+    background: currentColor;
+    clip-path: polygon(0 0, 28% 0, 100% 50%, 28% 100%, 0 100%, 72% 50%);
+}
+
+#links-quick::before {
+    margin-right: 0.25em;
+    visibility: hidden;
+}
+
+#links-quick::after {
+    margin-left: 0.25em;
+}
+
 #links-toggle {
     position: absolute;
     top: 0;
@@ -764,6 +786,7 @@ html.record-ready #record-controls {
 
 #record-rpm .record-btn {
     padding: 0.7em 0.5em;
+    touch-action: manipulation;
 }
 
 /* In the speed row the underline only marks the selected speed */
@@ -1481,28 +1504,6 @@ button.mini-btn {
     html.record-open #links-cell {
         border-bottom-style: solid;
         border-bottom-color: transparent;
-    }
-
-    /* A chevron centered on the capitals says "go to", not "you are here";
-       the hidden twin keeps the word centered */
-    #links-quick::before,
-    #links-quick::after {
-        content: "";
-        display: inline-block;
-        width: 0.36em;
-        height: 0.56em;
-        vertical-align: 0.08em;
-        background: currentColor;
-        clip-path: polygon(0 0, 28% 0, 100% 50%, 28% 100%, 0 100%, 72% 50%);
-    }
-
-    #links-quick::before {
-        margin-right: 0.25em;
-    }
-
-    #links-quick::after {
-        margin-left: 0.25em;
-        visibility: hidden;
     }
 
     #record-panel {

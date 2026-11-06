@@ -15,7 +15,7 @@
     if (!host || !list || !nav || !toggle || !rpmGroup || !viewBtn) return;
 
     var cfg = (window.SITE_CONFIG || {}).record || {};
-    var slowdown = Number(cfg.slowdown) || 40;
+    var turnSeconds = cfg.seconds_per_turn || { 33: 72, 45: 36 };
     var settleDelay = Number(cfg.settle_delay) || 4;
     var minStep = 1 / ((Number(cfg.updates_per_second) || 30) + 1);
     var reduced = !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -24,6 +24,7 @@
     var KICK = 22;
     var FAST = 30;
     var REAL = { 33: 200, 45: 270 };
+    var DOUBLE_PRESS = 500;
     var EYE_BOX = "103.728 144.043 737.583 582.787";
     var EYE = "M 472.17 145.561 C 315.54 145.561 178.79 261.991 105.63 435.031 C 127.32 486.321 154.59 532.631 186.3 572.411 L 186.3 435.031 C 221.98 435.031 250.91 463.961 250.91 499.641 L 250.91 639.141 C 259.75 646.571 268.81 653.571 278.06 660.111 L 278.06 435.031 C 313.74 435.031 342.67 463.961 342.67 499.641 L 342.67 696.871 C 351.9 700.931 361.28 704.571 370.77 707.761 L 370.77 549.881 C 406.45 549.881 435.38 578.811 435.38 614.491 L 435.38 722.341 C 447.5 723.771 459.77 724.501 472.17 724.501 C 628.8 724.501 765.55 608.071 838.71 435.031 C 765.55 261.991 628.8 145.561 472.17 145.561 Z M 645.72 558.191 C 577.7 558.191 522.56 503.051 522.56 435.031 C 522.56 367.011 577.7 311.871 645.72 311.871 C 713.74 311.871 768.88 367.011 768.88 435.031 C 768.88 503.051 713.73 558.191 645.72 558.191 Z";
     var BANDS = [
@@ -50,10 +51,11 @@
     var onScreen = true;
     var frame = null;
     var lastTime = 0;
+    var lastPress = -Infinity;
 
     // Degrees per second at the slowed-down speed
     function slowSpeed(rpm) {
-        return REAL[rpm] ? REAL[rpm] / slowdown : 0;
+        return turnSeconds[rpm] ? 360 / turnSeconds[rpm] : 0;
     }
 
     function norm(d) {
@@ -157,7 +159,7 @@
         frame = null;
         if (!active()) return;
         var dt = (now - lastTime) / 1000;
-        // Slow enough that the rim moves under a pixel per update; real speed needs every frame
+        // Slow speeds move the rim about a pixel per update; real speed needs every frame
         if (seek || Math.abs(vel) > FAST || dt >= minStep) {
             lastTime = now;
             step(Math.min(0.05, dt));
@@ -322,7 +324,8 @@
         svg.addEventListener("pointercancel", end);
     }
 
-    // --- Speed row: 0 stops; pressing the selected 33 or 45 again runs it for real ---
+    // --- Speed row: 0 stops; pressing the selected 33 or 45 again runs it for real.
+    // With Reduce Motion, real speed takes a double press. ---
 
     function bindSpeeds() {
         var buttons = rpmGroup.querySelectorAll("button");
@@ -336,7 +339,12 @@
             if (selected) cruise = slowSpeed(rpm);
 
             button.addEventListener("click", function () {
-                var real = !reduced && !!REAL[rpm] && button.getAttribute("aria-pressed") === "true" && !button.classList.contains("real");
+                var now = performance.now();
+                var quick = now - lastPress < DOUBLE_PRESS;
+                lastPress = now;
+                // The second press of a double press keeps real speed
+                if (quick && button.classList.contains("real")) return;
+                var real = (!reduced || quick) && !!REAL[rpm] && button.getAttribute("aria-pressed") === "true" && !button.classList.contains("real");
                 cruise = real ? REAL[rpm] : slowSpeed(rpm);
                 buttons.forEach(function (other) {
                     var otherRpm = other.getAttribute("data-rpm");

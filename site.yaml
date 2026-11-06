@@ -63,9 +63,11 @@ shutters:
   minute: 11
   duration: 12
 
-# Menu record. 33 and 45 rpm run this many times slower than real speed.
+# Menu record. seconds_per_turn sets the slow 33 and 45 rpm speeds.
 record:
-  slowdown: 40
+  seconds_per_turn:
+    "33": 72
+    "45": 36
   settle_delay: 4
   updates_per_second: 30
 
