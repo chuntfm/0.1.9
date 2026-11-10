@@ -67,41 +67,46 @@
     if (!titleCell) return;
 
     var taps = [];
-    var beatInterval = null;
-    var currentBpm = 0;
     var REQUIRED_TAPS = 4;
     var TAP_TIMEOUT = 2000;
 
-    function triggerBeat(ms) {
-        titleCell.style.setProperty("--beat-ms", ms + "ms");
-        titleCell.classList.remove("bpm-beat");
-        // Force reflow to restart animation
-        void titleCell.offsetWidth;
-        titleCell.classList.add("bpm-beat");
+    // Least-squares line through the tap times: beat length (ms) and time of the first beat
+    function fitBeat(times) {
+        var n = times.length;
+        var meanIndex = (n - 1) / 2;
+        var meanTime = 0;
+        var i;
+        for (i = 0; i < n; i++) meanTime += times[i];
+        meanTime /= n;
+        var sxy = 0;
+        var sxx = 0;
+        for (i = 0; i < n; i++) {
+            sxy += (i - meanIndex) * (times[i] - meanTime);
+            sxx += (i - meanIndex) * (i - meanIndex);
+        }
+        var period = sxy / sxx;
+        return { period: period, start: meanTime - period * meanIndex };
     }
 
-    function startPulse(bpm) {
-        stopPulse();
-        var ms = 60000 / bpm;
-        // Fire first beat immediately
-        triggerBeat(ms);
-        // Then keep firing on each beat
-        beatInterval = setInterval(function () {
-            triggerBeat(ms);
-        }, ms);
+    // One repeating animation, one beat long, placed on the fitted beat grid
+    function startPulse(beat) {
+        titleCell.style.setProperty("--beat-ms", beat.period + "ms");
+        titleCell.classList.add("bpm-beat");
+        if (!titleCell.getAnimations) return;
+        var anims = titleCell.getAnimations();
+        for (var i = 0; i < anims.length; i++) {
+            if (anims[i].animationName === "bpm-pulse") anims[i].startTime = beat.start;
+        }
     }
 
     function stopPulse() {
-        if (beatInterval) {
-            clearInterval(beatInterval);
-            beatInterval = null;
-        }
         titleCell.classList.remove("bpm-beat");
         titleCell.style.removeProperty("--beat-ms");
     }
 
-    titleCell.addEventListener("click", function (e) {
-        if (e.target.tagName === "A") return;
+    // Taps count on press, not on release
+    titleCell.addEventListener("pointerdown", function (e) {
+        if (e.button !== 0 || e.target.tagName === "A") return;
 
         var now = performance.now();
 
@@ -109,28 +114,15 @@
         if (taps.length > 0 && now - taps[taps.length - 1] > TAP_TIMEOUT) {
             taps = [];
             stopPulse();
-            currentBpm = 0;
             updateCounter();
         }
 
         taps.push(now);
 
         if (taps.length >= REQUIRED_TAPS) {
-            var intervals = [];
-            var start = taps.length - REQUIRED_TAPS;
-            for (var i = start + 1; i < taps.length; i++) {
-                intervals.push(taps[i] - taps[i - 1]);
-            }
-            var avgInterval = 0;
-            for (var j = 0; j < intervals.length; j++) {
-                avgInterval += intervals[j];
-            }
-            avgInterval /= intervals.length;
-
-            currentBpm = Math.round(60000 / avgInterval);
-            updateCounter(currentBpm);
-            startPulse(currentBpm);
-            taps = taps.slice(-REQUIRED_TAPS);
+            var beat = fitBeat(taps);
+            updateCounter(Math.round(60000 / beat.period));
+            startPulse(beat);
         }
     });
 })();

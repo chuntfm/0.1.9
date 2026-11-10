@@ -241,14 +241,14 @@ html.shutters-open body {
     font-weight: 400;
 }
 
+/* Full on the beat, held for 8% of it, then a fast fade that is gone by 45% */
 @keyframes bpm-pulse {
-    0% { background-color: var(--highlight); color: var(--bg); }
-    30% { background-color: transparent; color: var(--fg); }
-    100% { background-color: transparent; color: var(--fg); }
+    0%, 8% { background-color: var(--highlight); color: var(--bg); animation-timing-function: ease-out; }
+    45%, 100% { background-color: transparent; color: var(--fg); }
 }
 
 #header-title.bpm-beat {
-    animation: bpm-pulse var(--beat-ms) ease-out;
+    animation: bpm-pulse var(--beat-ms) linear infinite;
 }
 
 #header-counter {
